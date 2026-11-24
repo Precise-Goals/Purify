@@ -152,15 +152,13 @@ export async function callGemini(
     throw new GeminiError("NO_KEY", "Gemini API key is missing");
   }
 
-  const model = options.model || "gemini-1.5-flash";
+  const candidateModels = options.model
+    ? [options.model]
+    : ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-2.5-flash", "gemini-flash-latest"];
   const fetchFn = options.fetchFn || fetch;
   const timeoutMs = options.timeoutMs || 30000;
 
   const { systemInstruction, userPrompt } = buildGeminiPrompt(profile, aqiData);
-
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(
-    apiKey
-  )}`;
 
   const requestBody = {
     system_instruction: {
@@ -178,70 +176,81 @@ export async function callGemini(
     },
   };
 
-  let attempts = 0;
-  let lastResponse: Response | null = null;
   let lastError: Error | null = null;
+  let lastResponse: Response | null = null;
 
-  while (attempts < 2) {
-    attempts++;
-    try {
-      const response = await fetchFn(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
-        },
-        body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+  for (const model of candidateModels) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(
+      apiKey
+    )}`;
 
-      lastResponse = response;
+    let attempts = 0;
+    while (attempts < 2) {
+      attempts++;
+      try {
+        const response = await fetchFn(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
+          body: JSON.stringify(requestBody),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
 
-      // Handle 429 Quota without retry storm
-      if (response.status === 429) {
-        throw new GeminiError(
-          "QUOTA",
-          "Gemini API quota exceeded (HTTP 429). Please verify your Google AI Studio plan or retry later."
-        );
-      }
+        lastResponse = response;
 
-      // If server error (500, 502, 503, 504), retry once
-      if (response.status >= 500 && attempts < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        continue;
-      }
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        if (response.status === 400 || response.status === 403) {
-          throw new GeminiError("BAD_KEY", `Google API rejected key: ${response.status} ${errorText}`);
+        // Handle 429 Quota without retry storm
+        if (response.status === 429) {
+          throw new GeminiError(
+            "QUOTA",
+            "Gemini API quota exceeded (HTTP 429). Please verify your Google AI Studio plan or retry later."
+          );
         }
-        throw new GeminiError("GEMINI_FAIL", `Gemini returned HTTP ${response.status}: ${errorText}`);
-      }
 
-      const data = (await response.json()) as any;
-      const candidate = data.candidates?.[0];
+        // If model not found (404), fall through to next candidate model
+        if (response.status === 404 && candidateModels.length > 1) {
+          break;
+        }
 
-      if (!candidate || candidate.finishReason === "SAFETY") {
-        throw new GeminiError(
-          "MODEL_BLOCKED",
-          "Gemini safety filters or policy blocked the response. Please refine your household notes."
-        );
-      }
+        // If server error (500, 502, 503, 504), retry once
+        if (response.status >= 500 && attempts < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          continue;
+        }
 
-      const text = candidate.content?.parts?.[0]?.text;
-      if (!text || typeof text !== "string") {
-        throw new GeminiError("MODEL_BLOCKED", "Model returned empty content");
-      }
+        if (!response.ok) {
+          const errorText = await response.text();
+          if (response.status === 400 || response.status === 403) {
+            throw new GeminiError("BAD_KEY", `Google API rejected key: ${response.status} ${errorText}`);
+          }
+          throw new GeminiError("GEMINI_FAIL", `Gemini returned HTTP ${response.status}: ${errorText}`);
+        }
 
-      return parseGeminiResponse(text);
-    } catch (err: any) {
-      if (err instanceof GeminiError) {
-        throw err;
-      }
-      lastError = err;
-      if (attempts < 2) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        const data = (await response.json()) as any;
+        const candidate = data.candidates?.[0];
+
+        if (!candidate || candidate.finishReason === "SAFETY") {
+          throw new GeminiError(
+            "MODEL_BLOCKED",
+            "Gemini safety filters or policy blocked the response. Please refine your household notes."
+          );
+        }
+
+        const text = candidate.content?.parts?.[0]?.text;
+        if (!text || typeof text !== "string") {
+          throw new GeminiError("MODEL_BLOCKED", "Model returned empty content");
+        }
+
+        return parseGeminiResponse(text);
+      } catch (err: any) {
+        if (err instanceof GeminiError) {
+          throw err;
+        }
+        lastError = err;
+        if (attempts < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
       }
     }
   }
