@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Verify Quality Gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Test Dependencies
+        run: pip install pytest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Gate 0 — Harness Self-Test
+        run: python scripts/check_harness.py && pytest tests/harness/
+
+      - name: Gate 1 — Typecheck
+        run: bun run typecheck
+
+      - name: Gate 2 — Unit & Integration Tests
+        run: bun test
+
+      - name: Gate 3 — Repo Tracked Size Limit (< 10 MB)
+        run: bun run check-size
+
+      - name: Gate 4 — Production Build
+        run: bun run build

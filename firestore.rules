@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Anonymous auth owner-only saved plans
+    match /users/{userId}/plans/{planId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.keys().hasOnly(['city', 'aqi', 'pm25', 'actions', 'summary', 'createdAt', 'impact'])
+                    && request.resource.data.summary is string
+                    && request.resource.data.summary.size() <= 1000;
+      allow update, delete: if false; // create-only
+    }
+  }
+}
