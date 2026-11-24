@@ -9,17 +9,21 @@ ROOT = Path(__file__).resolve().parents[2]
 BREAKER = str(ROOT / "scripts" / "breaker.py")
 STATE_PATH = ROOT / "harness/state/state.json"
 BUDGETS_PATH = ROOT / "harness/state/budgets.json"
+FAILURES_LOG = ROOT / "harness/logs/failures.log.md"
 
 
 @pytest.fixture(autouse=True)
 def preserve_state_and_budgets():
     orig_state = STATE_PATH.read_text(encoding="utf-8") if STATE_PATH.exists() else None
     orig_budgets = BUDGETS_PATH.read_text(encoding="utf-8") if BUDGETS_PATH.exists() else None
+    orig_failures = FAILURES_LOG.read_text(encoding="utf-8") if FAILURES_LOG.exists() else None
     yield
     if orig_state is not None:
         STATE_PATH.write_text(orig_state, encoding="utf-8")
     if orig_budgets is not None:
         BUDGETS_PATH.write_text(orig_budgets, encoding="utf-8")
+    if orig_failures is not None:
+        FAILURES_LOG.write_text(orig_failures, encoding="utf-8")
 
 
 def _base_state():
