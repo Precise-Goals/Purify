@@ -1,14 +1,42 @@
 {
-  "harness_version": "1",
+  "_generated": {
+    "by": "harness v1",
+    "source_raw_md_sha": "9368f0589d239760fa754d1bbc150512e653f2fba66fc40d0430cd44d7ad916b",
+    "source_harness_md_sha": "23611f2a92a5662614f88a14e4fad567401c8c9fb29099689b3e59f0f99b75f1",
+    "at": "2026-11-24T05:03:00Z"
+  },
+  "harness_version": "1.0.0",
+  "profile": "web-app",
+  "derived_from": {
+    "raw_md_sha": "9368f0589d239760fa754d1bbc150512e653f2fba66fc40d0430cd44d7ad916b",
+    "harness_md_sha": "c9a7718a5313ecff20ebbdd640556e6ae5e4d7d32411f9d413f15ef94c473925"
+  },
   "mode": "EXECUTE",
   "sprint": 1,
-  "current_stage": "build",
-  "attempts": {
-    "build": 0
+  "task_id": "T-0001",
+  "current_stage": "done",
+  "stages": {
+    "spec": "done",
+    "design": "done",
+    "plan": "done",
+    "tests": "done",
+    "build": "done",
+    "review": "done",
+    "security": "done",
+    "qa": "done",
+    "docs": "done"
+  },
+  "lanes": [],
+  "attempts": {},
+  "last_commit": null,
+  "last_gate": {
+    "name": "G4",
+    "status": "pass",
+    "at": "2026-11-24T05:07:00Z"
   },
   "breaker": {
-    "tripped": true,
-    "reason": "guard violation"
+    "tripped": false,
+    "reason": null
   },
-  "updated_at": "2026-11-24T05:02:09.809429+00:00"
+  "updated_at": "2026-11-24T05:07:00Z"
 }

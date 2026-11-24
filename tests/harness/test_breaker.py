@@ -2,12 +2,24 @@
 Breaker tests: each of the 8 trip conditions has at least one test.
 """
 import json, subprocess, sys
+import pytest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BREAKER = str(ROOT / "scripts" / "breaker.py")
 STATE_PATH = ROOT / "harness/state/state.json"
 BUDGETS_PATH = ROOT / "harness/state/budgets.json"
+
+
+@pytest.fixture(autouse=True)
+def preserve_state_and_budgets():
+    orig_state = STATE_PATH.read_text(encoding="utf-8") if STATE_PATH.exists() else None
+    orig_budgets = BUDGETS_PATH.read_text(encoding="utf-8") if BUDGETS_PATH.exists() else None
+    yield
+    if orig_state is not None:
+        STATE_PATH.write_text(orig_state, encoding="utf-8")
+    if orig_budgets is not None:
+        BUDGETS_PATH.write_text(orig_budgets, encoding="utf-8")
 
 
 def _base_state():

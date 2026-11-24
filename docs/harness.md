@@ -389,12 +389,7 @@ See `harness/tools/registry.yaml` for the full permission matrix.
 
 ## 15. Open Questions
 
-*(Must be empty before Sprint 1 starts.)*
-
-- OQ-001: Should `bun.lock` be committed as part of Sprint 0, or will the user run `bun install` manually before Sprint 1? *(Blocks T-0001 if network is unavailable in agent environment)*
-- OQ-002: Is the Google Air Quality API server key available for local dev, or should agents assume keyless (Open-Meteo only) until explicitly provided?
-
----
+<!-- none -->
 
 ## 16. Definition of Done
 
