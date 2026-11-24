@@ -1,0 +1,32 @@
+{
+  "task_id": "T-0007",
+  "from": "qa",
+  "to": "orchestrator",
+  "artifact": "harness/artifacts/T-0007/07-qa.md",
+  "status": "complete",
+  "summary": "T-0007 UI: Household Entry Form & Deterministic Impact Display verified. All 50 unit tests and Next.js standalone build passed cleanly.",
+  "inputs_consumed": ["01-spec.md", "02-design.md", "03-plan.md", "04-tests.md", "05-build.md", "06-review.md", "06b-security.md"],
+  "acceptance_refs": ["AC-011-a", "AC-011-b", "AC-014-a"],
+  "open_questions": [],
+  "assumptions": [],
+  "files_touched": [
+    "src/app/globals.css",
+    "src/app/layout.tsx",
+    "src/app/page.tsx",
+    "src/components/AqiBadge.tsx",
+    "src/components/ImpactCard.tsx",
+    "src/components/PlanDisplay.tsx",
+    "tests/ui.test.ts"
+  ],
+  "checks_run": [
+    {
+      "cmd": "bun run verify",
+      "exit": 0
+    },
+    {
+      "cmd": "bun run build",
+      "exit": 0
+    }
+  ],
+  "next_expected_artifact": "done"
+}

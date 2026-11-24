@@ -42,3 +42,11 @@
 ### BREAKER TRIP | 2026-11-24T05:03:56.705694+00:00 | No progress: failing test count has not decreased in 3 iterations
 
 ### BREAKER TRIP | 2026-11-24T05:03:56.924832+00:00 | guard violation
+
+### BREAKER TRIP | 2026-11-24T05:43:49.478884+00:00 | Stage 'build' failed 4 times (max 3)
+
+### BREAKER TRIP | 2026-11-24T05:43:49.564234+00:00 | Identical failure 'TypeError: cannot read property...' repeated 2 times
+
+### BREAKER TRIP | 2026-11-24T05:43:49.649475+00:00 | No progress: failing test count has not decreased in 3 iterations
+
+### BREAKER TRIP | 2026-11-24T05:43:49.926687+00:00 | guard violation
