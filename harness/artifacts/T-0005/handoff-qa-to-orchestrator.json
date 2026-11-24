@@ -1,0 +1,27 @@
+{
+  "task_id": "T-0005",
+  "from": "qa",
+  "to": "orchestrator",
+  "artifact": "harness/artifacts/T-0005/07-qa.md",
+  "status": "complete",
+  "summary": "T-0005 Gemini Prompt Builder & Client verified. All 7 unit tests passed. AC-003-a, AC-003-b, AC-007-b satisfied.",
+  "inputs_consumed": ["01-spec.md", "02-design.md", "03-plan.md", "04-tests.md", "05-build.md", "06-review.md", "06b-security.md"],
+  "acceptance_refs": ["AC-003-a", "AC-003-b", "AC-007-b"],
+  "open_questions": [],
+  "assumptions": [],
+  "files_touched": [
+    "src/lib/gemini.ts",
+    "tests/gemini.test.ts"
+  ],
+  "checks_run": [
+    {
+      "cmd": "bun test tests/gemini.test.ts",
+      "exit": 0
+    },
+    {
+      "cmd": "bun run typecheck",
+      "exit": 0
+    }
+  ],
+  "next_expected_artifact": "done"
+}
