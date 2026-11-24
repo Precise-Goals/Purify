@@ -27,9 +27,11 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="antialiased min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+      <body className="antialiased min-h-screen bg-zinc-50 text-zinc-900 flex flex-col font-sans selection:bg-zinc-950 selection:text-white relative">
+        <div className="ambient-bg-gradient" aria-hidden="true" />
+        <div className="ambient-bg-noise" aria-hidden="true" />
         <Navbar />
-        <div className="flex-1 w-full">{children}</div>
+        <main className="flex-1 w-full pt-4 sm:pt-6">{children}</main>
         <Footer />
       </body>
     </html>

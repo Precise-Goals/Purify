@@ -5,18 +5,18 @@ import { AlertTriangle, MapPin, Activity, Gauge, CloudFog, ShieldAlert } from "l
 export function getAqiColorClass(category: AQICategory): string {
   switch (category) {
     case "Good":
-      return "bg-emerald-950/40 text-emerald-300 border-emerald-500/40";
+      return "bg-emerald-50 text-emerald-950 border-emerald-200/90";
     case "Moderate":
-      return "bg-yellow-950/40 text-yellow-300 border-yellow-500/40";
+      return "bg-yellow-50 text-yellow-950 border-yellow-200/90";
     case "UnhealthyForSensitiveGroups":
-      return "bg-amber-950/40 text-amber-300 border-amber-500/40";
+      return "bg-amber-50 text-amber-950 border-amber-200/90";
     case "Unhealthy":
-      return "bg-orange-950/40 text-orange-300 border-orange-500/40";
+      return "bg-orange-50 text-orange-950 border-orange-200/90";
     case "VeryUnhealthy":
-      return "bg-purple-950/40 text-purple-300 border-purple-500/40";
+      return "bg-purple-50 text-purple-950 border-purple-200/90";
     case "Hazardous":
     default:
-      return "bg-rose-950/40 text-rose-300 border-rose-500/40";
+      return "bg-rose-50 text-rose-950 border-rose-200/90";
   }
 }
 
@@ -30,16 +30,16 @@ export const AqiBadge: React.FC<AqiBadgeProps> = ({ air }) => {
   return (
     <div className="w-full space-y-3">
       {air.isSevereHazard && (
-        <div className="p-4 rounded-2xl bg-rose-950/80 text-rose-100 text-sm border-2 border-rose-600 shadow-lg shadow-rose-950/50 flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0 mt-0.5 animate-pulse" />
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-sm shadow-sm flex items-start gap-3">
+          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 animate-pulse" />
           <div className="space-y-1">
-            <div className="font-bold text-sm uppercase tracking-wider text-rose-200 flex items-center gap-2">
+            <div className="font-bold text-sm uppercase tracking-wider text-rose-900 flex items-center gap-2">
               <span>Severe Hazardous Smog Warning</span>
-              <span className="text-xs px-2 py-0.5 bg-rose-600 text-white rounded font-mono">
+              <span className="text-xs px-2 py-0.5 bg-rose-600 text-white rounded font-mono font-bold">
                 AQI {air.aqi}
               </span>
             </div>
-            <p className="text-rose-200/90 text-xs leading-relaxed font-normal">
+            <p className="text-rose-800 text-xs leading-relaxed font-normal">
               {air.medicalEscalation ||
                 "AQI is dangerously high. Vulnerable individuals (children, seniors, asthmatics) should stay indoors in filtered spaces and seek medical care if experiencing respiratory distress."}
             </p>
@@ -48,13 +48,13 @@ export const AqiBadge: React.FC<AqiBadgeProps> = ({ air }) => {
       )}
 
       <div
-        className={`p-6 rounded-2xl border backdrop-blur-md shadow-md flex flex-wrap items-center justify-between gap-6 ${colorClass}`}
+        className={`p-6 rounded-2xl border backdrop-blur-md shadow-sm flex flex-wrap items-center justify-between gap-6 ${colorClass}`}
       >
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold opacity-90">
             <MapPin className="w-3.5 h-3.5" />
             <span>{air.location.displayName}</span>
-            <span className="text-slate-400">·</span>
+            <span className="text-zinc-400">·</span>
             <span className="font-mono text-[11px] opacity-75">
               [{air.location.latitude.toFixed(2)}, {air.location.longitude.toFixed(2)}]
             </span>

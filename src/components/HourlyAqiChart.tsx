@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Activity, TrendingDown, Clock, ShieldCheck, Info } from "lucide-react";
+import { Activity, Clock, Info } from "lucide-react";
 
 interface CityData {
   name: string;
@@ -105,29 +105,29 @@ export const HourlyAqiChart: React.FC = () => {
   return (
     <div className="bento-card rounded-2xl p-6 space-y-6">
       {/* Header and City Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200/80 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-lg font-bold text-white tracking-tight">
+            <Activity className="w-5 h-5 text-zinc-950" />
+            <h3 className="text-lg font-bold text-zinc-950 tracking-tight">
               Diurnal Smog Cycle & Exposure Suppression
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-zinc-500 mt-1">
             24-hour diurnal atmospheric boundary-layer model vs. Purify physical intervention
           </p>
         </div>
 
         {/* City Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200/80">
           {Object.entries(CITY_DIURNAL_DATA).map(([key, data]) => (
             <button
               key={key}
               onClick={() => setSelectedCity(key)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 selectedCity === key
-                  ? "bg-emerald-500 text-slate-950 shadow"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  ? "bg-zinc-950 text-white shadow-xs"
+                  : "text-zinc-600 hover:text-zinc-950 hover:bg-white"
               }`}
             >
               {data.name}
@@ -137,27 +137,27 @@ export const HourlyAqiChart: React.FC = () => {
       </div>
 
       {/* Narrative Alert */}
-      <div className="p-3.5 rounded-xl bg-slate-900/50 border border-slate-800 text-xs text-slate-300 flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+      <div className="p-3.5 rounded-xl bg-zinc-50/80 border border-zinc-200 text-xs text-zinc-700 flex items-start gap-2.5">
+        <Info className="w-4 h-4 text-zinc-950 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong className="text-white font-semibold">{city.name} Inversion Profile:</strong> {city.narrative}
+          <strong className="text-zinc-950 font-semibold">{city.name} Inversion Profile:</strong> {city.narrative}
         </p>
       </div>
 
       {/* SVG Interactive Chart */}
-      <div className="relative w-full overflow-hidden bg-slate-950/60 rounded-xl border border-slate-800/80 p-2 sm:p-4">
+      <div className="relative w-full overflow-hidden bg-white/70 rounded-xl border border-zinc-200/80 p-2 sm:p-4">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full h-auto overflow-visible select-none"
         >
           <defs>
             <linearGradient id="ambientGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.35" />
+              <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.18" />
               <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="mitigatedGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.01" />
             </linearGradient>
           </defs>
 
@@ -172,7 +172,7 @@ export const HourlyAqiChart: React.FC = () => {
                   y1={y}
                   x2={paddingX + chartWidth}
                   y2={y}
-                  stroke="#1e293b"
+                  stroke="#E4E4E7"
                   strokeDasharray="4 4"
                   strokeWidth="1"
                 />
@@ -180,7 +180,7 @@ export const HourlyAqiChart: React.FC = () => {
                   x={paddingX - 8}
                   y={y + 3}
                   textAnchor="end"
-                  fill="#64748b"
+                  fill="#71717A"
                   fontSize="10"
                   fontFamily="monospace"
                 >
@@ -197,7 +197,7 @@ export const HourlyAqiChart: React.FC = () => {
           <path
             d={ambientPath}
             fill="none"
-            stroke="#f43f5e"
+            stroke="#e11d48"
             strokeWidth="2.5"
             strokeLinecap="round"
           />
@@ -206,7 +206,7 @@ export const HourlyAqiChart: React.FC = () => {
           <path
             d={mitigatedPath}
             fill="none"
-            stroke="#10b981"
+            stroke="#059669"
             strokeWidth="2.5"
             strokeLinecap="round"
           />
@@ -227,9 +227,9 @@ export const HourlyAqiChart: React.FC = () => {
             cx={activeAmbientPt.x}
             cy={activeAmbientPt.y}
             r="5"
-            fill="#f43f5e"
-            stroke="#020617"
-            strokeWidth="2"
+            fill="#e11d48"
+            stroke="#ffffff"
+            strokeWidth="2.5"
           />
 
           {/* Mitigated Point */}
@@ -237,9 +237,9 @@ export const HourlyAqiChart: React.FC = () => {
             cx={activeMitigatedPt.x}
             cy={activeMitigatedPt.y}
             r="5"
-            fill="#10b981"
-            stroke="#020617"
-            strokeWidth="2"
+            fill="#059669"
+            stroke="#ffffff"
+            strokeWidth="2.5"
           />
 
           {/* X Axis Time Labels */}
@@ -251,7 +251,7 @@ export const HourlyAqiChart: React.FC = () => {
                 x={x}
                 y={paddingY + chartHeight + 18}
                 textAnchor="middle"
-                fill="#94a3b8"
+                fill="#71717A"
                 fontSize="10"
                 fontFamily="monospace"
               >
@@ -262,19 +262,19 @@ export const HourlyAqiChart: React.FC = () => {
         </svg>
 
         {/* Hour Slider Controls */}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-zinc-200/80">
           <div className="flex items-center gap-3">
-            <Clock className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs text-slate-400">Scrub Time of Day:</span>
+            <Clock className="w-4 h-4 text-zinc-950" />
+            <span className="text-xs text-zinc-600 font-medium">Scrub Time of Day:</span>
             <input
               type="range"
               min="0"
               max="23"
               value={selectedHour}
               onChange={(e) => setSelectedHour(Number(e.target.value))}
-              className="w-36 sm:w-48 accent-emerald-500 cursor-pointer"
+              className="w-36 sm:w-48 accent-zinc-950 cursor-pointer"
             />
-            <span className="font-mono text-xs font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
+            <span className="font-mono text-xs font-bold text-zinc-950 bg-zinc-100 px-2.5 py-1 rounded border border-zinc-200">
               {hourString}
             </span>
           </div>
@@ -283,13 +283,13 @@ export const HourlyAqiChart: React.FC = () => {
           <div className="flex items-center gap-6 text-xs font-mono">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-              <span className="text-slate-400">Ambient:</span>
-              <span className="text-rose-400 font-bold">{ambientVal} µg/m³</span>
+              <span className="text-zinc-600">Ambient:</span>
+              <span className="text-rose-600 font-bold">{ambientVal} µg/m³</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span className="text-slate-400">With Purify:</span>
-              <span className="text-emerald-400 font-bold">{mitigatedVal} µg/m³</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-600" />
+              <span className="text-zinc-600">With Purify:</span>
+              <span className="text-emerald-700 font-bold">{mitigatedVal} µg/m³</span>
             </div>
           </div>
         </div>

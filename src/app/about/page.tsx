@@ -5,20 +5,14 @@ import Link from "next/link";
 import {
   Wind,
   User,
-  HeartPulse,
   ShieldCheck,
   Cpu,
   Cloud,
-  Database,
   Code2,
-  Layers,
-  Sparkles,
   ArrowRight,
   ExternalLink,
   CheckCircle2,
   Terminal,
-  Activity,
-  FileCode,
 } from "lucide-react";
 import { PURIFY_GCP_STACK } from "@/lib/gcp";
 
@@ -106,16 +100,16 @@ export default function AboutPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">
       {/* Header / Hero */}
       <section className="max-w-3xl space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-semibold">
-          <Terminal className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200/90 text-zinc-800 text-xs font-mono font-semibold shadow-xs">
+          <Terminal className="w-3.5 h-3.5 text-zinc-950" />
           <span>Mission & Architecture Deep-Dive</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-zinc-950 tracking-tight">
           Engineering Clean Air Intelligence
         </h1>
 
-        <p className="text-slate-400 text-base leading-relaxed">
+        <p className="text-zinc-600 text-base leading-relaxed">
           The backstory, design philosophy, and enterprise Google Cloud Platform (GCP) architecture behind the Purify system.
         </p>
       </section>
@@ -123,43 +117,41 @@ export default function AboutPage() {
       {/* Bento Grid Section 1: About Me & About Purify */}
       <section className="grid grid-cols-1 md:grid-cols-12 gap-8">
         {/* About Me Bento Card (5 cols) */}
-        <div className="md:col-span-5 bento-card bento-glow-emerald rounded-2xl p-6 sm:p-8 space-y-5">
-          <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-md">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <User className="w-6 h-6 text-emerald-400" />
-              </div>
+        <div className="md:col-span-5 bento-card rounded-2xl p-6 sm:p-8 space-y-5">
+          <div className="flex items-center gap-3 border-b border-zinc-200/80 pb-4">
+            <div className="w-12 h-12 rounded-full bg-zinc-950 text-white flex items-center justify-center shadow-xs">
+              <User className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">About Me</h2>
-              <p className="text-xs text-slate-400 font-mono">Creator & Systems Engineer</p>
+              <h2 className="text-lg font-bold text-zinc-950 tracking-tight">About Me</h2>
+              <p className="text-xs text-zinc-500 font-mono">Creator & Systems Engineer</p>
             </div>
           </div>
 
-          <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <div className="space-y-4 text-xs sm:text-sm text-zinc-600 leading-relaxed">
             <p>
-              I built <strong className="text-white">Purify</strong> out of personal necessity and engineering conviction. Having lived through severe winter atmospheric inversions where outdoor AQI breached <span className="text-rose-400 font-mono font-bold">500+ µg/m³</span>, I watched vulnerable family members struggle with acute bronchial distress.
+              I built <strong className="text-zinc-950 font-semibold">Purify</strong> out of personal necessity and engineering conviction. Having lived through severe winter atmospheric inversions where outdoor AQI breached <span className="text-rose-600 font-mono font-bold">500+ µg/m³</span>, I watched vulnerable family members struggle with acute bronchial distress.
             </p>
 
             <p>
-              When consulting modern LLMs for advice, I was shocked by the prevalence of <strong className="text-white">unbounded AI hallucinations</strong>: chatbots confidently inventing imaginary air filter specs, recommending deep breathing outdoors during particulate emergencies, or citing fake reduction percentages.
+              When consulting modern LLMs for advice, I was shocked by the prevalence of <strong className="text-zinc-950 font-semibold">unbounded AI hallucinations</strong>: chatbots confidently inventing imaginary air filter specs, recommending deep breathing outdoors during particulate emergencies, or citing fake reduction percentages.
             </p>
 
             <p>
-              My goal was simple: <strong className="text-emerald-400">Never let an LLM do arithmetic.</strong> Build an assistant where generative AI synthesizes user personas, but authoritative physical laws calculate exposure reduction.
+              My goal was simple: <strong className="text-zinc-950 font-semibold">Never let an LLM do arithmetic.</strong> Build an assistant where generative AI synthesizes user personas, but authoritative physical laws calculate exposure reduction.
             </p>
           </div>
 
-          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <ShieldCheck className="w-4 h-4" />
+          <div className="pt-2 border-t border-zinc-200/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
+            <span className="flex items-center gap-1.5 text-zinc-950 font-semibold">
+              <ShieldCheck className="w-4 h-4 text-zinc-950" />
               <span>Deterministic Philosophy</span>
             </span>
             <a
               href="https://github.com/Precise-Goals/Purify"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white flex items-center gap-1"
+              className="text-zinc-600 hover:text-zinc-950 flex items-center gap-1 transition-colors"
             >
               <span>GitHub</span>
               <ExternalLink className="w-3 h-3" />
@@ -168,70 +160,68 @@ export default function AboutPage() {
         </div>
 
         {/* About Purify Project Bento Card (7 cols) */}
-        <div className="md:col-span-7 bento-card bento-glow-cobalt rounded-2xl p-6 sm:p-8 space-y-6">
-          <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-400 p-0.5 shadow-md">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <Wind className="w-6 h-6 text-blue-400" />
-              </div>
+        <div className="md:col-span-7 bento-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="flex items-center gap-3 border-b border-zinc-200/80 pb-4">
+            <div className="w-12 h-12 rounded-full bg-zinc-950 text-white flex items-center justify-center shadow-xs">
+              <Wind className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight">About Purify Project</h2>
-              <p className="text-xs text-slate-400 font-mono">Form-First Smog Protection Architecture</p>
+              <h2 className="text-lg font-bold text-zinc-950 tracking-tight">About Purify Project</h2>
+              <p className="text-xs text-zinc-500 font-mono">Form-First Smog Protection Architecture</p>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
             Purify is structured around a strict 5-stage pipeline designed to provide immediate, actionable smog protection without chat fatigue:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
+              <div className="text-xs font-bold text-zinc-950 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-950" />
                 <span>1. Form-First Synthesis</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-zinc-600 leading-normal">
                 Gathers housing envelope, commute hours, and vulnerability in one 1-click payload.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
+              <div className="text-xs font-bold text-zinc-950 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-950" />
                 <span>2. Sensor Grounding</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-zinc-600 leading-normal">
                 Fetches hyper-local ambient AQI & PM2.5 from Google Maps Air Quality API with 10-minute caching.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
+              <div className="text-xs font-bold text-zinc-950 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-950" />
                 <span>3. Catalog Hallucination Guard</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-zinc-600 leading-normal">
                 Gemini 2.5 selects candidate action IDs; ungrounded IDs are discarded by runtime validation.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
-              <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-1">
+              <div className="text-xs font-bold text-zinc-950 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-zinc-950" />
                 <span>4. Physical Exposure Math</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-zinc-600 leading-normal">
                 Stacking non-linear decay models compute exact PM2.5 exposure and Berkeley Earth cigarette equivalence.
               </p>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs text-slate-400">Ready to test your location?</span>
+          <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 flex items-center justify-between">
+            <span className="text-xs text-zinc-600">Ready to test your location?</span>
             <Link
               href="/dashboard"
-              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+              className="text-xs font-bold text-zinc-950 hover:underline flex items-center gap-1"
             >
               <span>Go to Assistant Dashboard</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -242,17 +232,17 @@ export default function AboutPage() {
 
       {/* Section 2: Google Cloud Platform (GCP) Architecture Blueprint */}
       <section id="gcp" className="space-y-8 scroll-mt-20">
-        <div className="border-b border-slate-800 pb-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="border-b border-zinc-200/80 pb-4 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <Cloud className="w-6 h-6 text-blue-400" />
+            <h2 className="text-2xl font-black text-zinc-950 tracking-tight flex items-center gap-2">
+              <Cloud className="w-6 h-6 text-zinc-950" />
               <span>Google Cloud Platform (GCP) Pipeline Architecture</span>
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-zinc-500 mt-1">
               Engineered using the Google Cloud ecosystem for high-concurrency, low-latency clean air intelligence.
             </p>
           </div>
-          <span className="text-xs font-mono px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <span className="text-xs font-mono px-3 py-1 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200 font-semibold">
             Enterprise Blueprint
           </span>
         </div>
@@ -266,19 +256,19 @@ export default function AboutPage() {
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200 font-medium">
                     {item.category}
                   </span>
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" title={item.status} />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" title={item.status} />
                 </div>
-                <h3 className="text-base font-bold text-white">{item.service}</h3>
-                <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                <h3 className="text-base font-bold text-zinc-950">{item.service}</h3>
+                <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
                   {item.roleInPurify}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
+              <div className="pt-3 border-t border-zinc-200/80 text-[10px] font-mono text-zinc-700 flex items-center gap-1 font-medium">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                 <span>Production Architecture Ready</span>
               </div>
             </div>
@@ -287,24 +277,24 @@ export default function AboutPage() {
 
         {/* Interactive GCP Code Snippets Inspector */}
         <div className="bento-card rounded-2xl p-6 sm:p-8 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200/80 pb-4">
             <div className="flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-emerald-400" />
-              <h3 className="text-base font-bold text-white tracking-tight">
+              <Code2 className="w-5 h-5 text-zinc-950" />
+              <h3 className="text-base font-bold text-zinc-950 tracking-tight">
                 GCP Code Implementation Modules
               </h3>
             </div>
 
             {/* Code Tabs */}
-            <div className="flex flex-wrap items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            <div className="flex flex-wrap items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200">
               {(Object.keys(GCP_CODE_SNIPPETS) as Array<keyof typeof GCP_CODE_SNIPPETS>).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveCodeTab(tab)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
                     activeCodeTab === tab
-                      ? "bg-emerald-500 text-slate-950 shadow"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      ? "bg-zinc-950 text-white shadow-xs"
+                      : "text-zinc-600 hover:text-zinc-950 hover:bg-white"
                   }`}
                 >
                   {tab}.ts
@@ -314,17 +304,17 @@ export default function AboutPage() {
           </div>
 
           {/* Code Viewer */}
-          <div className="relative rounded-xl bg-slate-950 border border-slate-800 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-[11px] font-mono text-slate-400">
+          <div className="relative rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden text-zinc-100">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 border-b border-zinc-800 text-[11px] font-mono text-zinc-400">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                <span className="ml-2 text-slate-300">src/lib/gcp/{activeCodeTab}.ts</span>
+                <span className="ml-2 text-zinc-300">src/lib/gcp/{activeCodeTab}.ts</span>
               </div>
               <span>TypeScript 5.7</span>
             </div>
-            <pre className="p-4 text-xs font-mono text-slate-300 overflow-x-auto leading-relaxed">
+            <pre className="p-4 text-xs font-mono text-zinc-300 overflow-x-auto leading-relaxed">
               <code>{GCP_CODE_SNIPPETS[activeCodeTab]}</code>
             </pre>
           </div>
@@ -332,10 +322,10 @@ export default function AboutPage() {
       </section>
 
       {/* Footer Navigation CTA */}
-      <section className="text-center pt-8 border-t border-slate-800">
+      <section className="text-center pt-8 border-t border-zinc-200/80">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/25 hover:brightness-110 active:scale-95 transition-all"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-sm shadow-md active:scale-95 transition-all"
         >
           <span>Launch Purify Assistant</span>
           <ArrowRight className="w-4 h-4" />

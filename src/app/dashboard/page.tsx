@@ -8,19 +8,12 @@ import {
   Eye,
   EyeOff,
   Compass,
-  MapPin,
   Sparkles,
   AlertTriangle,
-  CheckCircle2,
   Cpu,
-  Clock,
-  Layers,
-  Activity,
   Sliders,
   ExternalLink,
-  ChevronRight,
   RefreshCw,
-  Home as HomeIcon,
 } from "lucide-react";
 import { AqiBadge } from "@/components/AqiBadge";
 import { ImpactCard } from "@/components/ImpactCard";
@@ -157,24 +150,24 @@ export default function DashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Top Banner & Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200/80 pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
               Assistant Dashboard
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-800 border border-zinc-200">
               Interactive Execution
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-500 mt-1">
             Configure your household envelope to compute live ambient AQI and personalized deterministic mitigation.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-zinc-200 text-xs font-mono text-zinc-700 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>GCP Pipeline: Ready</span>
           </div>
         </div>
@@ -182,12 +175,12 @@ export default function DashboardPage() {
 
       {/* Error Alert Banner */}
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-rose-950/80 border border-rose-600/80 text-rose-200 text-xs sm:text-sm flex items-start gap-3 shadow-lg">
-          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm flex items-start gap-3 shadow-xs">
+          <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div className="flex-1 font-medium">{errorMsg}</div>
           <button
             onClick={() => setErrorMsg(null)}
-            className="text-rose-400 hover:text-white font-bold text-xs"
+            className="text-rose-700 hover:text-rose-950 font-bold text-xs"
           >
             Dismiss
           </button>
@@ -201,16 +194,16 @@ export default function DashboardPage() {
           {/* Gemini API Key Panel */}
           <div className="bento-card rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <label htmlFor="apiKey" className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Key className="w-4 h-4 text-emerald-400" />
+              <label htmlFor="apiKey" className="text-xs font-bold uppercase tracking-wider text-zinc-950 flex items-center gap-2">
+                <Key className="w-4 h-4 text-zinc-950" />
                 <span>Your Gemini API Key</span>
-                <span className="text-rose-400">*</span>
+                <span className="text-rose-500">*</span>
               </label>
               <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[11px] font-semibold text-emerald-400 hover:underline flex items-center gap-1"
+                className="text-[11px] font-semibold text-zinc-950 hover:underline flex items-center gap-1"
               >
                 <span>Free Key from Google</span>
                 <ExternalLink className="w-3 h-3" />
@@ -224,30 +217,30 @@ export default function DashboardPage() {
                 value={apiKey}
                 onChange={(e) => handleKeyChange(e.target.value)}
                 placeholder="AIzaSy..."
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs font-mono text-white placeholder-slate-500 pr-24"
+                className="w-full px-4 py-2.5 rounded-xl bg-zinc-50 border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-950/20 focus:border-zinc-950 text-xs font-mono text-zinc-900 placeholder-zinc-400 pr-24"
               />
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-800/80 border border-slate-700"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-zinc-600 hover:text-zinc-950 px-2 py-1 rounded bg-zinc-100 border border-zinc-200"
               >
                 {showKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
+            <div className="flex items-center justify-between text-xs text-zinc-500 pt-1">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={rememberKey}
                   onChange={(e) => handleRememberToggle(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0 w-3.5 h-3.5"
+                  className="rounded border-zinc-300 text-zinc-950 focus:ring-0 w-3.5 h-3.5 accent-zinc-950"
                 />
                 <span className="text-[11px]">Save key in local browser storage</span>
               </label>
 
-              <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" />
+              <span className="text-[11px] text-zinc-700 font-mono flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-zinc-950" />
                 <span>Never stored on server</span>
               </span>
             </div>
@@ -255,23 +248,23 @@ export default function DashboardPage() {
 
           {/* Household Exposure Profile Form */}
           <form onSubmit={handleSubmit} className="bento-card rounded-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Sliders className="w-4 h-4 text-teal-400" />
+            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-950 flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-zinc-950" />
                 <span>Household & Exposure Profile</span>
               </h3>
-              <span className="text-[10px] font-mono text-slate-500">Step 1 of 2</span>
+              <span className="text-[10px] font-mono text-zinc-500">Step 1 of 2</span>
             </div>
 
             {/* Location & GPS */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+              <label className="text-xs font-semibold text-zinc-800 flex items-center justify-between">
                 <span>City / Smog Hub</span>
                 <button
                   type="button"
                   onClick={handleUseGps}
                   disabled={gpsLoading}
-                  className="text-[11px] text-emerald-400 hover:text-emerald-300 font-mono flex items-center gap-1"
+                  className="text-[11px] text-zinc-950 hover:underline font-mono flex items-center gap-1"
                 >
                   <Compass className="w-3 h-3" />
                   <span>{gpsLoading ? "Detecting GPS..." : "Auto-Detect via GPS"}</span>
@@ -287,13 +280,13 @@ export default function DashboardPage() {
                 }}
                 placeholder="e.g. Delhi, Lahore, Beijing, Mumbai..."
                 required
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs text-white"
+                className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-950/20 focus:border-zinc-950 text-xs text-zinc-900"
               />
             </div>
 
             {/* Housing Envelope */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-xs font-semibold text-zinc-800">
                 Housing Envelope Air Sealing
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -308,8 +301,8 @@ export default function DashboardPage() {
                     onClick={() => setHomeType(type.id as any)}
                     className={`py-2 px-2 text-center rounded-xl text-xs font-semibold border transition-all ${
                       homeType === type.id
-                        ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-400"
-                        : "bg-slate-900/60 border-slate-800 text-slate-400 hover:text-white"
+                        ? "bg-zinc-950 text-white border-zinc-950 shadow-xs"
+                        : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                     }`}
                   >
                     {type.label}
@@ -320,9 +313,9 @@ export default function DashboardPage() {
 
             {/* Outdoor Exposure Hours Slider */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+              <div className="flex items-center justify-between text-xs font-semibold text-zinc-800">
                 <span>Daily Outdoor Commute / Exposure</span>
-                <span className="font-mono text-emerald-400 font-bold">{outdoorHours} hours / day</span>
+                <span className="font-mono text-zinc-950 font-bold">{outdoorHours} hours / day</span>
               </div>
               <input
                 type="range"
@@ -331,19 +324,19 @@ export default function DashboardPage() {
                 step="1"
                 value={outdoorHours}
                 onChange={(e) => setOutdoorHours(Number(e.target.value))}
-                className="w-full accent-emerald-500 cursor-pointer"
+                className="w-full accent-zinc-950 cursor-pointer"
               />
             </div>
 
             {/* Commute Mode */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300">
+              <label className="text-xs font-semibold text-zinc-800">
                 Primary Commute Mode
               </label>
               <select
                 value={commuteMode}
                 onChange={(e) => setCommuteMode(e.target.value as any)}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950/20 focus:border-zinc-950"
               >
                 <option value="carpool_transit">Public Transit / Metro / Bus</option>
                 <option value="walk_cycle">Walking / Bicycle</option>
@@ -355,11 +348,11 @@ export default function DashboardPage() {
             {/* Cooking Fuel & Purifier Check */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-300">Cooking Fuel</label>
+                <label className="text-xs font-semibold text-zinc-800">Cooking Fuel</label>
                 <select
                   value={cookingFuel}
                   onChange={(e) => setCookingFuel(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950/20 focus:border-zinc-950"
                 >
                   <option value="lpg_electric">LPG / Induction</option>
                   <option value="biomass_wood">Biomass / Wood</option>
@@ -368,12 +361,12 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-1.5 flex flex-col justify-end">
-                <label className="flex items-center gap-2 p-2 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 cursor-pointer select-none">
+                <label className="flex items-center gap-2 p-2 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={hasExistingPurifier}
                     onChange={(e) => setHasExistingPurifier(e.target.checked)}
-                    className="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0 w-3.5 h-3.5"
+                    className="rounded border-zinc-300 text-zinc-950 focus:ring-0 w-3.5 h-3.5 accent-zinc-950"
                   />
                   <span>Have HEPA Purifier</span>
                 </label>
@@ -382,8 +375,8 @@ export default function DashboardPage() {
 
             {/* Free-text Household Notes */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-slate-300">Vulnerabilities / Household Notes</span>
+              <div className="flex items-center justify-between text-xs text-zinc-500">
+                <span className="font-semibold text-zinc-800">Vulnerabilities / Household Notes</span>
                 <span className="font-mono text-[10px]">{notes.length}/300</span>
               </div>
               <textarea
@@ -391,7 +384,7 @@ export default function DashboardPage() {
                 onChange={(e) => setNotes(e.target.value.slice(0, 300))}
                 rows={2}
                 placeholder="e.g. Infant 8 months old, asthmatic grandfather, morning running routine..."
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-zinc-50 border border-zinc-300 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950/20 focus:border-zinc-950"
               />
             </div>
 
@@ -399,7 +392,7 @@ export default function DashboardPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+              className="w-full py-3.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -419,33 +412,33 @@ export default function DashboardPage() {
         {/* Right Column: Results & Telemetry (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {!planResult && !loading && (
-            <div className="bento-card rounded-2xl p-10 text-center space-y-4 border-dashed border-slate-800">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mx-auto flex items-center justify-center">
-                <Wind className="w-6 h-6 text-emerald-400" />
+            <div className="bento-card rounded-2xl p-10 text-center space-y-4 border-dashed border-zinc-300">
+              <div className="w-12 h-12 rounded-2xl bg-zinc-100 border border-zinc-200 mx-auto flex items-center justify-center">
+                <Wind className="w-6 h-6 text-zinc-950" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white">No Action Plan Generated Yet</h3>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                <h3 className="text-base font-bold text-zinc-950">No Action Plan Generated Yet</h3>
+                <p className="text-xs text-zinc-500 max-w-sm mx-auto leading-relaxed">
                   Enter your Gemini key and household profile on the left, then click Generate to trigger the 5-stage deterministic pipeline.
                 </p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-md mx-auto text-left font-mono text-[10px]">
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="text-slate-500 block">Stage 1</span>
-                  <span className="text-emerald-400 font-semibold">Live AQI Fetch</span>
+                <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
+                  <span className="text-zinc-500 block">Stage 1</span>
+                  <span className="text-zinc-950 font-semibold">Live AQI Fetch</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="text-slate-500 block">Stage 2</span>
-                  <span className="text-teal-400 font-semibold">Gemini 2.5 AI</span>
+                <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
+                  <span className="text-zinc-500 block">Stage 2</span>
+                  <span className="text-zinc-950 font-semibold">Gemini 2.5 AI</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="text-slate-500 block">Stage 3</span>
-                  <span className="text-blue-400 font-semibold">Catalog Bind</span>
+                <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
+                  <span className="text-zinc-500 block">Stage 3</span>
+                  <span className="text-zinc-950 font-semibold">Catalog Guard</span>
                 </div>
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
-                  <span className="text-slate-500 block">Stage 4</span>
-                  <span className="text-purple-400 font-semibold">Impact Math</span>
+                <div className="p-2.5 rounded-lg bg-zinc-50 border border-zinc-200">
+                  <span className="text-zinc-500 block">Stage 4</span>
+                  <span className="text-zinc-950 font-semibold">Impact Math</span>
                 </div>
               </div>
             </div>
@@ -453,12 +446,12 @@ export default function DashboardPage() {
 
           {loading && (
             <div className="bento-card rounded-2xl p-12 text-center space-y-4 animate-pulse">
-              <div className="w-12 h-12 rounded-full border-2 border-emerald-400 border-t-transparent animate-spin mx-auto" />
+              <div className="w-12 h-12 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin mx-auto" />
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                <h3 className="text-sm font-bold text-zinc-950 uppercase tracking-wider font-mono">
                   Executing Purify Pipeline...
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-zinc-500">
                   Querying live pollutant sensor arrays, querying Gemini 2.5 Flash, and computing multi-compartment exposure equations.
                 </p>
               </div>
@@ -482,37 +475,37 @@ export default function DashboardPage() {
 
               {/* Stage 4: GCP & Pipeline Trace Telemetry Bento Card */}
               <div className="bento-card rounded-2xl p-5 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-                  <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-                    <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="flex items-center justify-between border-b border-zinc-200/80 pb-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-zinc-950 uppercase tracking-wider">
+                    <Cpu className="w-3.5 h-3.5 text-zinc-950" />
                     <span>Pipeline Execution Telemetry</span>
                   </div>
-                  <span className="text-[10px] font-mono text-emerald-400">
+                  <span className="text-[10px] font-mono text-zinc-700 font-semibold">
                     Total: {planResult.trace.totalMs}ms
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[10px]">
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                    <span className="text-slate-500 block">AQI Fetch</span>
-                    <span className="text-white font-semibold">{planResult.trace.stages.aqiMs}ms</span>
+                  <div className="p-2 rounded bg-zinc-50 border border-zinc-200">
+                    <span className="text-zinc-500 block">AQI Fetch</span>
+                    <span className="text-zinc-950 font-semibold">{planResult.trace.stages.aqiMs}ms</span>
                   </div>
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                    <span className="text-slate-500 block">Gemini 2.5</span>
-                    <span className="text-white font-semibold">{planResult.trace.stages.geminiMs}ms</span>
+                  <div className="p-2 rounded bg-zinc-50 border border-zinc-200">
+                    <span className="text-zinc-500 block">Gemini 2.5</span>
+                    <span className="text-zinc-950 font-semibold">{planResult.trace.stages.geminiMs}ms</span>
                   </div>
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                    <span className="text-slate-500 block">Catalog Guard</span>
-                    <span className="text-white font-semibold">{planResult.trace.stages.validateMs}ms</span>
+                  <div className="p-2 rounded bg-zinc-50 border border-zinc-200">
+                    <span className="text-zinc-500 block">Catalog Guard</span>
+                    <span className="text-zinc-950 font-semibold">{planResult.trace.stages.validateMs}ms</span>
                   </div>
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                    <span className="text-slate-500 block">Physics Model</span>
-                    <span className="text-white font-semibold">{planResult.trace.stages.impactMs}ms</span>
+                  <div className="p-2 rounded bg-zinc-50 border border-zinc-200">
+                    <span className="text-zinc-500 block">Physics Model</span>
+                    <span className="text-zinc-950 font-semibold">{planResult.trace.stages.impactMs}ms</span>
                   </div>
                 </div>
 
                 {planResult.trace.gcpStack && (
-                  <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between text-[10px] text-slate-400 font-mono">
+                  <div className="pt-2 border-t border-zinc-200/80 flex flex-wrap items-center justify-between text-[10px] text-zinc-500 font-mono">
                     <span>Runtime: {planResult.trace.gcpStack.runtime}</span>
                     <span>AI: {planResult.trace.gcpStack.model}</span>
                   </div>
