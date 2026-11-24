@@ -1,10 +1,20 @@
 import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "BreatheWise — Gemini AI Smog-Season Assistant",
+  title: "Purify — Gemini AI Smog Intelligence & Clean Air Assistant",
   description:
-    "Personalized, form-first winter smog protection assistant with deterministic PM2.5 impact models and BYO Gemini API key.",
+    "Next-generation urban air quality assistant powered by Google Cloud & Gemini AI. Deterministic PM2.5 exposure mitigation models with modern bento-grid intelligence.",
 };
 
 export default function RootLayout({
@@ -13,12 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={poppins.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
-      <body className="antialiased min-h-screen bg-slate-50 text-slate-900">
-        {children}
+      <body className="antialiased min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+        <Navbar />
+        <div className="flex-1 w-full">{children}</div>
+        <Footer />
       </body>
     </html>
   );

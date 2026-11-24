@@ -18,6 +18,11 @@ export interface PipelineTrace {
     impactMs: number;
   };
   totalMs: number;
+  gcpStack?: {
+    runtime: string;
+    model: string;
+    aqiSource: string;
+  };
 }
 
 export interface PlanResponse {
@@ -117,6 +122,11 @@ export async function runPipeline(
         impactMs,
       },
       totalMs,
+      gcpStack: {
+        runtime: "Google Cloud Run / Edge Serverless",
+        model: "Gemini 2.5 Flash via Google AI / Vertex API",
+        aqiSource: air.source === "google" ? "Google Maps Air Quality API" : "Open-Meteo High-Res AQI",
+      },
     },
   };
 }

@@ -5,7 +5,10 @@ export async function GET() {
     {
       status: "healthy",
       service: "breathewise",
-      version: "0.1.0",
+      app: "purify",
+      name: "Purify Clean Air Intelligence",
+      gcpStack: "Google Cloud Run + Vertex AI + Google Maps Air Quality API",
+      version: "0.2.0",
       timestamp: new Date().toISOString(),
     },
     { status: 200 }
