@@ -1,0 +1,2 @@
+- 2026-11-24T04:41:00Z | mode=CURATION | sprint=0 | task=null | sha=NO_GIT | note=boot: raw.md filled, harness.md missing → MODE B curation; harness.md written and scaffold started
+- 2026-11-24T04:53:00Z | mode=SCAFFOLD | sprint=0 | task=null | sha=NO_GIT | note=G0 green (0 problems); pytest tests/harness 41/41 passed; Sprint 0 scaffold complete; pending user approval before Sprint 1

@@ -1,0 +1,14 @@
+{
+  "harness_version": "1",
+  "mode": "EXECUTE",
+  "sprint": 1,
+  "current_stage": "build",
+  "attempts": {
+    "build": 0
+  },
+  "breaker": {
+    "tripped": true,
+    "reason": "guard violation"
+  },
+  "updated_at": "2026-11-24T05:02:09.809429+00:00"
+}

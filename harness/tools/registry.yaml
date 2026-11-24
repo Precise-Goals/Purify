@@ -1,0 +1,88 @@
+# generated-by: harness v1 | source: harness.md
+tools:
+  - name: file_read
+    kind: builtin
+    purpose: Read any file in the repo
+    allowed_roles: [all]
+    approval: auto
+
+  - name: file_write
+    kind: builtin
+    purpose: Write files within role allow-list
+    allowed_roles: [role-scoped]
+    approval: auto
+    guard: scripts/guard_paths.py
+
+  - name: bash
+    kind: bash
+    purpose: Run commands from harness.md §8 only
+    allowed_roles: [builder, test-author, qa, security, orchestrator]
+    approval: auto
+    sandbox: harness/tools/sandbox.md
+
+  - name: git
+    kind: bash
+    purpose: Version control operations
+    allowed_roles: [orchestrator, builder]
+    approval: auto
+    forbid:
+      - "push --force"
+      - "reset --hard origin"
+
+  - name: web_fetch
+    kind: api
+    purpose: Fetch library docs, issue tracker, MCP web content
+    allowed_roles: [po-spec, tech-lead, librarian]
+    approval: auto
+
+  - name: bun_install
+    kind: bash
+    purpose: Install / add packages
+    allowed_roles: [builder]
+    approval: confirm   # adding new deps always requires human approval
+
+  - name: deploy
+    kind: bash
+    purpose: Deploy to Cloud Run / Firebase (FORBIDDEN for all agents)
+    allowed_roles: []
+    approval: forbidden
+
+  - name: docker_build
+    kind: bash
+    purpose: Build Docker image for smoke test
+    allowed_roles: [builder, qa]
+    approval: auto
+
+  - name: semgrep_mcp
+    kind: mcp
+    purpose: Static security scan on changed files (G1)
+    allowed_roles: [security, qa]
+    approval: auto
+    mcp_server: semgrep
+
+  - name: github_mcp
+    kind: mcp
+    purpose: Read PRs, issues, CI status
+    allowed_roles: [po-spec, librarian, orchestrator]
+    approval: auto
+    mcp_server: github
+
+  - name: context7_mcp
+    kind: mcp
+    purpose: Fetch library/framework documentation
+    allowed_roles: [tech-lead, builder]
+    approval: auto
+    mcp_server: context7
+
+# Allow-list for outbound network (bash / api tools)
+allowed_hosts:
+  - registry.npmjs.org
+  - bun.sh
+  - airquality.googleapis.com
+  - air-quality-api.open-meteo.com
+  - geocoding-api.open-meteo.com
+  - generativelanguage.googleapis.com
+  - firestore.googleapis.com
+  - firebase.googleapis.com
+  - github.com
+  - api.github.com

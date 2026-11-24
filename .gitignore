@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing & Harness temporary
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+tmp/
+temp/
+*.tmp
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Environment variables & secrets
+.env
+.env*.local
+*.pem
+*.key
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Bun
+bun.lockb
