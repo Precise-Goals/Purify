@@ -1,0 +1,27 @@
+{
+  "task_id": "T-0002",
+  "from": "qa",
+  "to": "orchestrator",
+  "artifact": "harness/artifacts/T-0002/07-qa.md",
+  "status": "complete",
+  "summary": "T-0002 Deterministic PM2.5 Impact Model verified. All 8 tests passed, AC-005-a, AC-005-b, AC-005-c fully verified.",
+  "inputs_consumed": ["01-spec.md", "02-design.md", "03-plan.md", "04-tests.md", "05-build.md", "06-review.md", "06b-security.md"],
+  "acceptance_refs": ["AC-005-a", "AC-005-b", "AC-005-c"],
+  "open_questions": [],
+  "assumptions": [],
+  "files_touched": [
+    "src/lib/impact.ts",
+    "tests/impact.test.ts"
+  ],
+  "checks_run": [
+    {
+      "cmd": "bun test tests/impact.test.ts",
+      "exit": 0
+    },
+    {
+      "cmd": "bun run typecheck",
+      "exit": 0
+    }
+  ],
+  "next_expected_artifact": "done"
+}
