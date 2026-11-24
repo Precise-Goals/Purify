@@ -28,7 +28,14 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </head>
       <body className="antialiased min-h-screen bg-zinc-50 text-zinc-900 flex flex-col font-sans selection:bg-zinc-950 selection:text-white relative">
-        <div className="ambient-bg-gradient" aria-hidden="true" />
+        <div className="ambient-liquid-container" aria-hidden="true">
+          <div className="ambient-liquid-base" />
+          <div className="liquid-orb liquid-orb-1" />
+          <div className="liquid-orb liquid-orb-2" />
+          <div className="liquid-orb liquid-orb-3" />
+          <div className="liquid-orb liquid-orb-4" />
+          <div className="liquid-glass-lens" />
+        </div>
         <div className="ambient-bg-noise" aria-hidden="true" />
         <Navbar />
         <main className="flex-1 w-full pt-4 sm:pt-6">{children}</main>
