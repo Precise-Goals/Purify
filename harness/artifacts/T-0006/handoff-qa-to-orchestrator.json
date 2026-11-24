@@ -1,0 +1,29 @@
+{
+  "task_id": "T-0006",
+  "from": "qa",
+  "to": "orchestrator",
+  "artifact": "harness/artifacts/T-0006/07-qa.md",
+  "status": "complete",
+  "summary": "T-0006 Full Pipeline Orchestration & API Routes verified. All 4 unit/integration tests passed. AC-001-a, AC-003-a, AC-004-a, AC-005-a, AC-007-a, AC-009-a, AC-009-b satisfied.",
+  "inputs_consumed": ["01-spec.md", "02-design.md", "03-plan.md", "04-tests.md", "05-build.md", "06-review.md", "06b-security.md"],
+  "acceptance_refs": ["AC-001-a", "AC-003-a", "AC-004-a", "AC-005-a", "AC-007-a", "AC-009-a", "AC-009-b"],
+  "open_questions": [],
+  "assumptions": [],
+  "files_touched": [
+    "src/lib/pipeline.ts",
+    "src/app/api/plan/route.ts",
+    "src/app/api/health/route.ts",
+    "tests/pipeline.test.ts"
+  ],
+  "checks_run": [
+    {
+      "cmd": "bun test tests/pipeline.test.ts",
+      "exit": 0
+    },
+    {
+      "cmd": "bun run typecheck",
+      "exit": 0
+    }
+  ],
+  "next_expected_artifact": "done"
+}
