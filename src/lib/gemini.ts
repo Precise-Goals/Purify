@@ -187,7 +187,10 @@ export async function callGemini(
     try {
       const response = await fetchFn(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
         body: JSON.stringify(requestBody),
         signal: AbortSignal.timeout(timeoutMs),
       });

@@ -25,6 +25,13 @@ describe("sanitize: validateGeminiKey (AC-007-a)", () => {
     expect(res.valid).toBe(true);
     expect(res.code).toBeUndefined();
   });
+
+  it("approves Google Cloud / Vertex AI keys with AQ. prefix containing dots", () => {
+    const aqKey = "AQ.fakeMockTestKeyWithDotsAndHyphens123456789";
+    const res = validateGeminiKey(aqKey);
+    expect(res.valid).toBe(true);
+    expect(res.code).toBeUndefined();
+  });
 });
 
 describe("sanitize: checkPayloadSize (AC-009-b)", () => {

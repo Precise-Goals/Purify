@@ -44,9 +44,8 @@ export function validateGeminiKey(key: unknown): ValidateKeyResult {
   }
 
   const trimmed = key.trim();
-  // Valid Google API keys are alphanumeric with hyphens/underscores, at least 20 chars
-  // Typically AIzaSy... but test mocks may vary; enforce minimum length 20 and valid charset
-  if (trimmed.length < 20 || !/^[A-Za-z0-9_-]+$/.test(trimmed)) {
+  // Valid Google API keys are alphanumeric with hyphens/underscores/dots (e.g. AIzaSy..., AQ....), at least 20 chars
+  if (trimmed.length < 20 || !/^[A-Za-z0-9_.-]+$/.test(trimmed)) {
     return { valid: false, code: "BAD_KEY" };
   }
 
