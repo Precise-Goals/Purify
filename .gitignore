@@ -17,6 +17,8 @@ temp/
 out/
 build/
 dist/
+*.tsbuildinfo
+.vercel/
 
 # Environment variables & secrets
 .env
@@ -36,3 +38,5 @@ Thumbs.db
 
 # Bun
 bun.lockb
+
+.vercel
