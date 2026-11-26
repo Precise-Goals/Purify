@@ -1,7 +1,10 @@
 import React from "react";
 import type { AirQualityData, AQICategory } from "../lib/aqi";
-import { AlertTriangle, MapPin, Activity, Gauge, CloudFog, ShieldAlert } from "lucide-react";
+import { MapPin, CloudFog, ShieldAlert } from "lucide-react";
 
+/**
+ * Returns WCAG-compliant AQI category surface and border styles.
+ */
 export function getAqiColorClass(category: AQICategory): string {
   switch (category) {
     case "Good":
@@ -30,16 +33,20 @@ export const AqiBadge: React.FC<AqiBadgeProps> = ({ air }) => {
   return (
     <div className="w-full space-y-3">
       {air.isSevereHazard && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-sm shadow-sm flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 animate-pulse" />
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-sm shadow-sm flex items-start gap-3"
+        >
+          <ShieldAlert className="w-5 h-5 text-rose-700 shrink-0 mt-0.5 animate-pulse" aria-hidden="true" />
           <div className="space-y-1">
             <div className="font-bold text-sm uppercase tracking-wider text-rose-900 flex items-center gap-2">
               <span>Severe Hazardous Smog Warning</span>
-              <span className="text-xs px-2 py-0.5 bg-rose-600 text-white rounded font-mono font-bold">
+              <span className="text-xs px-2 py-0.5 bg-rose-700 text-white rounded font-mono font-bold">
                 AQI {air.aqi}
               </span>
             </div>
-            <p className="text-rose-800 text-xs leading-relaxed font-normal">
+            <p className="text-rose-900 text-xs leading-relaxed font-normal">
               {air.medicalEscalation ||
                 "AQI is dangerously high. Vulnerable individuals (children, seniors, asthmatics) should stay indoors in filtered spaces and seek medical care if experiencing respiratory distress."}
             </p>
@@ -48,14 +55,16 @@ export const AqiBadge: React.FC<AqiBadgeProps> = ({ air }) => {
       )}
 
       <div
+        role="region"
+        aria-label={`Live air quality for ${air.location.displayName}`}
         className={`p-6 rounded-2xl border backdrop-blur-md shadow-sm flex flex-wrap items-center justify-between gap-6 ${colorClass}`}
       >
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold opacity-90">
-            <MapPin className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider font-semibold">
+            <MapPin className="w-3.5 h-3.5" aria-hidden="true" />
             <span>{air.location.displayName}</span>
-            <span className="text-zinc-400">·</span>
-            <span className="font-mono text-[11px] opacity-75">
+            <span aria-hidden="true">·</span>
+            <span className="font-mono text-[11px] opacity-90">
               [{air.location.latitude.toFixed(2)}, {air.location.longitude.toFixed(2)}]
             </span>
           </div>
@@ -64,21 +73,21 @@ export const AqiBadge: React.FC<AqiBadgeProps> = ({ air }) => {
             <span className="text-5xl font-black tracking-tight">{air.aqi}</span>
             <div>
               <span className="text-lg font-bold block leading-none">AQI</span>
-              <span className="text-xs opacity-80 font-medium">{air.category}</span>
+              <span className="text-xs font-semibold">{air.category}</span>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-6 text-right">
           <div className="space-y-1">
-            <div className="text-xs uppercase tracking-wider font-semibold opacity-80 flex items-center justify-end gap-1.5">
-              <CloudFog className="w-3.5 h-3.5" />
+            <div className="text-xs uppercase tracking-wider font-semibold flex items-center justify-end gap-1.5">
+              <CloudFog className="w-3.5 h-3.5" aria-hidden="true" />
               <span>PM2.5 Ambient</span>
             </div>
             <div className="text-2xl font-black font-mono">
-              {air.pm25} <span className="text-xs font-normal opacity-75">µg/m³</span>
+              {air.pm25} <span className="text-xs font-normal">µg/m³</span>
             </div>
-            <div className="text-[11px] opacity-70 font-mono">
+            <div className="text-[11px] font-mono">
               Source: {air.source === "google" ? "Google Maps Air Quality API" : "Open-Meteo Sensor Array"}
             </div>
           </div>

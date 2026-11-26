@@ -1,9 +1,11 @@
 /**
  * Google Cloud Platform (GCP) Cloud Firestore Connector
- * 
+ *
  * Provides stateful persistence, distributed token-bucket rate limiting,
  * and anonymous telemetry logging without recording sensitive keys or PII.
  */
+
+import type { FetchLike } from "../aqi";
 
 export interface TelemetryDocument {
   sessionId: string;
@@ -16,36 +18,54 @@ export interface TelemetryDocument {
   latencyMs: number;
 }
 
-export class FirestoreAuditService {
-  private collectionName = "purify_telemetry";
-  private isConfigured: boolean;
+export interface FirestoreOptions {
+  projectId?: string;
+  accessToken?: string;
+  isConfigured?: boolean;
+  fetchFn?: FetchLike;
+}
 
-  constructor() {
-    this.isConfigured = Boolean(process.env.GOOGLE_CLOUD_PROJECT || process.env.FIRESTORE_EMULATOR_HOST);
+/**
+ * Firestore telemetry connector for anonymized environmental audit logs.
+ */
+export class FirestoreAuditService {
+  private readonly collectionName = "purify_telemetry";
+  private readonly isConfigured: boolean;
+  private readonly projectId: string;
+  private readonly accessToken?: string;
+  private readonly fetchFn: FetchLike;
+
+  constructor(options: FirestoreOptions = {}) {
+    this.projectId =
+      options.projectId || process.env.GOOGLE_CLOUD_PROJECT || "purify-gcp-production";
+    this.accessToken = options.accessToken ?? process.env.GOOGLE_ACCESS_TOKEN;
+    this.isConfigured =
+      options.isConfigured ??
+      Boolean(process.env.GOOGLE_CLOUD_PROJECT || process.env.FIRESTORE_EMULATOR_HOST);
+    this.fetchFn = options.fetchFn || fetch;
   }
 
   /**
    * Logs an anonymized plan calculation event for city-level analytics.
-   * Never logs user keys, coordinates, or free-text notes.
+   * Uses cryptographic UUIDs and never logs user keys, coordinates, or notes.
    */
-  public async logAnonymizedEvent(event: TelemetryDocument): Promise<{ success: boolean; id: string }> {
-    const docId = `evt_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  public async logAnonymizedEvent(
+    event: TelemetryDocument
+  ): Promise<{ success: boolean; id: string }> {
+    const docId = `evt_${crypto.randomUUID()}`;
 
     if (!this.isConfigured) {
-      // In-memory / mock fallback for serverless dev environments
       return { success: true, id: docId };
     }
 
     try {
-      // GCP Firestore REST API dispatch (works in Node & Edge runtimes without heavy SDK binaries)
-      const projectId = process.env.GOOGLE_CLOUD_PROJECT || "purify-gcp-production";
-      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${this.collectionName}?documentId=${docId}`;
+      const url = `https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/${this.collectionName}?documentId=${docId}`;
 
-      const res = await fetch(url, {
+      const res = await this.fetchFn(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(process.env.GOOGLE_ACCESS_TOKEN ? { Authorization: `Bearer ${process.env.GOOGLE_ACCESS_TOKEN}` } : {}),
+          ...(this.accessToken ? { Authorization: `Bearer ${this.accessToken}` } : {}),
         },
         body: JSON.stringify({
           fields: {

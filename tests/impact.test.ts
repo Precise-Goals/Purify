@@ -112,4 +112,27 @@ describe("impact: calculateImpact calculations", () => {
 
     expect(resHigh.baselineExposurePM25).toBeCloseTo(res16.baselineExposurePM25, 4);
   });
+
+  it("models infiltration by homeType/purifier and computes cooking, lifestyle & CO2 impacts", () => {
+    const sealedRes = calculateImpact({ outdoorHours: 0, outdoorPM25: 100, homeType: "sealed" }, []);
+    const leakyRes = calculateImpact({ outdoorHours: 0, outdoorPM25: 100, homeType: "leaky" }, []);
+    const purifierRes = calculateImpact(
+      { outdoorHours: 0, outdoorPM25: 100, hasExistingPurifier: true },
+      []
+    );
+    expect(purifierRes.baselineExposurePM25).toBeCloseTo(36, 1);
+    expect(sealedRes.baselineExposurePM25).toBeCloseTo(40, 1);
+    expect(leakyRes.baselineExposurePM25).toBeCloseTo(65, 1);
+
+    const actions = [
+      getActionById("carpool_public_transit")!,
+      getActionById("switch_clean_fuel")!,
+      getActionById("saline_nasal_rinse")!,
+    ];
+    const combinedRes = calculateImpact({ outdoorHours: 4, outdoorPM25: 150 }, actions);
+    expect(combinedRes.co2SavedKgPerMonth).toBe(30); // 18 + 12 kg CO2
+    expect(combinedRes.breakdown.cookingReductionFraction).toBeGreaterThan(0);
+    expect(combinedRes.breakdown.outdoorReductionFraction).toBeGreaterThan(0);
+    expect(combinedRes.breakdown.indoorReductionFraction).toBeGreaterThan(0);
+  });
 });

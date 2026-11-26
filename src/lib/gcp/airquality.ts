@@ -1,9 +1,12 @@
 /**
  * Google Cloud Platform (GCP) Google Maps Air Quality API Connector
- * 
+ *
  * Provides hyper-local pollutant data (PM2.5, PM10, O3, NO2, SO2, CO),
  * Universal AQI, dominant pollutants, and official health recommendations.
  */
+
+import { redactSecrets } from "../sanitize";
+import type { FetchLike } from "../aqi";
 
 export interface GoogleAqiRequest {
   latitude: number;
@@ -45,30 +48,34 @@ export interface GoogleAqiResponse {
   };
 }
 
+/**
+ * Enterprise client for the Google Maps Air Quality API.
+ */
 export class GoogleAirQualityClient {
-  private apiKey?: string;
+  private readonly apiKey?: string;
+  private readonly fetchFn: FetchLike;
 
-  constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.GOOGLE_MAPS_API_KEY;
+  constructor(apiKey?: string, fetchFn: FetchLike = fetch) {
+    this.apiKey = apiKey !== undefined ? apiKey : process.env.GOOGLE_MAPS_API_KEY;
+    this.fetchFn = fetchFn;
   }
 
   /**
-   * Queries Google Air Quality API current conditions.
+   * Queries Google Air Quality API current conditions using header authentication.
    */
-  public async getCurrentConditions(
-    req: GoogleAqiRequest
-  ): Promise<GoogleAqiResponse> {
+  public async getCurrentConditions(req: GoogleAqiRequest): Promise<GoogleAqiResponse> {
     if (!this.apiKey) {
       throw new Error("Google Air Quality API requires a valid GOOGLE_MAPS_API_KEY");
     }
 
-    const endpoint = `https://airquality.googleapis.com/v1currentConditions:lookup?key=${encodeURIComponent(
-      this.apiKey
-    )}`;
+    const endpoint = "https://airquality.googleapis.com/v1/currentConditions:lookup";
 
-    const res = await fetch(endpoint, {
+    const res = await this.fetchFn(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": this.apiKey,
+      },
       body: JSON.stringify({
         location: { latitude: req.latitude, longitude: req.longitude },
         extraComputations: req.extraComputations ?? [
@@ -82,7 +89,7 @@ export class GoogleAirQualityClient {
     });
 
     if (!res.ok) {
-      const errText = await res.text().catch(() => "");
+      const errText = redactSecrets(await res.text().catch(() => ""));
       throw new Error(`Google Air Quality API lookup failed (${res.status}): ${errText}`);
     }
 

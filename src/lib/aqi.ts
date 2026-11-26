@@ -1,7 +1,7 @@
 /**
  * Live Air Quality Engine
  * Fetches ambient PM2.5 and AQI with Google AQ API as primary,
- * seamless Open-Meteo fallback, and in-memory 10-minute caching.
+ * seamless Open-Meteo fallback, and bounded 10-minute in-memory caching.
  */
 
 export interface LocationCoordinates {
@@ -49,11 +49,72 @@ interface CacheItem {
   expiresAt: number;
 }
 
+interface OpenMeteoGeocodeResult {
+  latitude?: number;
+  longitude?: number;
+  name?: string;
+  country?: string;
+}
+
+interface OpenMeteoGeocodeResponse {
+  results?: OpenMeteoGeocodeResult[];
+}
+
+interface GoogleAQIndex {
+  code?: string;
+  aqi?: number;
+}
+
+interface GoogleAQPollutant {
+  code?: string;
+  concentration?: {
+    value?: number;
+  };
+}
+
+interface GoogleAQApiResponse {
+  indexes?: GoogleAQIndex[];
+  pollutants?: GoogleAQPollutant[];
+}
+
+interface OpenMeteoAQIResponse {
+  current?: {
+    pm2_5?: number;
+    us_aqi?: number;
+  };
+}
+
+interface RawAQIRecord {
+  aqi: number;
+  pm25: number;
+  source: AQISource;
+}
+
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_CACHE_ENTRIES = 500;
 const aqiCache = new Map<string, CacheItem>();
 
+/**
+ * Clears the in-memory AQI cache (primarily for isolated tests).
+ */
 export function clearAQICache(): void {
   aqiCache.clear();
+}
+
+/**
+ * Evicts expired or oldest entries to keep the cache strictly bounded.
+ */
+function pruneAQICache(now: number): void {
+  for (const [key, item] of aqiCache.entries()) {
+    if (item.expiresAt <= now) {
+      aqiCache.delete(key);
+    }
+  }
+  while (aqiCache.size >= MAX_CACHE_ENTRIES) {
+    const oldestKey = aqiCache.keys().next().value;
+    if (oldestKey === undefined) break;
+    aqiCache.delete(oldestKey);
+  }
 }
 
 /**
@@ -77,22 +138,25 @@ export function categorizeAQI(aqi: number): CategorizeResult {
 
   if (rounded <= 50) {
     return { category: "Good", isSevereHazard: false };
-  } else if (rounded <= 100) {
-    return { category: "Moderate", isSevereHazard: false };
-  } else if (rounded <= 150) {
-    return { category: "UnhealthyForSensitiveGroups", isSevereHazard: false };
-  } else if (rounded <= 200) {
-    return { category: "Unhealthy", isSevereHazard: false };
-  } else if (rounded <= 300) {
-    return { category: "VeryUnhealthy", isSevereHazard: false };
-  } else {
-    return {
-      category: "Hazardous",
-      isSevereHazard: true,
-      medicalEscalation:
-        "EMERGENCY ADVISORY: AQI exceeds 300 (Hazardous). Children, seniors, and individuals with respiratory or cardiovascular disease must seek prompt medical care if experiencing shortness of breath, continuous coughing, or chest tightness. Remain inside sealed or filtered rooms.",
-    };
   }
+  if (rounded <= 100) {
+    return { category: "Moderate", isSevereHazard: false };
+  }
+  if (rounded <= 150) {
+    return { category: "UnhealthyForSensitiveGroups", isSevereHazard: false };
+  }
+  if (rounded <= 200) {
+    return { category: "Unhealthy", isSevereHazard: false };
+  }
+  if (rounded <= 300) {
+    return { category: "VeryUnhealthy", isSevereHazard: false };
+  }
+  return {
+    category: "Hazardous",
+    isSevereHazard: true,
+    medicalEscalation:
+      "EMERGENCY ADVISORY: AQI exceeds 300 (Hazardous). Children, seniors, and individuals with respiratory or cardiovascular disease must seek prompt medical care if experiencing shortness of breath, continuous coughing, or chest tightness. Remain inside sealed or filtered rooms.",
+  };
 }
 
 /**
@@ -113,7 +177,6 @@ export async function geocodeLocation(
   const rawCity = (query.city || "Delhi").trim();
   const normalized = rawCity.toLowerCase();
 
-  // Check known hubs first
   if (KNOWN_HUBS[normalized]) {
     const hub = KNOWN_HUBS[normalized];
     return {
@@ -123,29 +186,27 @@ export async function geocodeLocation(
     };
   }
 
-  // Fallback to Open-Meteo Geocoding API
   try {
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
       rawCity
     )}&count=1&language=en&format=json`;
     const res = await fetchFn(url, { signal: AbortSignal.timeout(5000) });
     if (res.ok) {
-      const data = (await res.json()) as any;
-      if (data?.results && data.results.length > 0) {
-        const top = data.results[0];
+      const data = (await res.json()) as OpenMeteoGeocodeResponse;
+      const top = data.results?.[0];
+      if (top && typeof top.latitude === "number" && typeof top.longitude === "number") {
         const country = top.country ? `, ${top.country}` : "";
         return {
           latitude: top.latitude,
           longitude: top.longitude,
-          displayName: `${top.name}${country}`,
+          displayName: `${top.name || rawCity}${country}`,
         };
       }
     }
   } catch {
-    // Continue to default
+    // Continue to approximate Delhi fallback
   }
 
-  // Ultimate fallback to Delhi
   return {
     latitude: 28.6139,
     longitude: 77.209,
@@ -154,7 +215,79 @@ export async function geocodeLocation(
 }
 
 /**
- * Main Air Quality fetcher with caching, Google AQ primary, and Open-Meteo fallback.
+ * Fetches live pollutant readings from Google Maps Air Quality API using header auth.
+ */
+async function fetchFromGoogleAQ(
+  loc: LocationCoordinates,
+  googleApiKey: string,
+  fetchFn: FetchLike
+): Promise<RawAQIRecord | null> {
+  try {
+    const googleUrl = "https://airquality.googleapis.com/v1/currentConditions:lookup";
+    const googleRes = await fetchFn(googleUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": googleApiKey,
+      },
+      body: JSON.stringify({
+        location: {
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+        },
+        extraComputations: ["LOCAL_AQI", "POLLUTANT_CONCENTRATION"],
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!googleRes.ok) return null;
+
+    const gData = (await googleRes.json()) as GoogleAQApiResponse;
+    const uaqi = gData.indexes?.find((idx) => idx.code === "uaqi" || idx.code === "usa_epa");
+    if (!uaqi || typeof uaqi.aqi !== "number") return null;
+
+    const pm25Pollutant = gData.pollutants?.find((p) => p.code === "pm25");
+    const pm25Val = pm25Pollutant?.concentration?.value ?? uaqi.aqi * 0.6;
+
+    return {
+      aqi: Math.round(uaqi.aqi),
+      pm25: Number(pm25Val.toFixed(1)),
+      source: "google",
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches live pollutant readings from the keyless Open-Meteo Air Quality fallback API.
+ */
+async function fetchFromOpenMeteo(
+  loc: LocationCoordinates,
+  fetchFn: FetchLike
+): Promise<RawAQIRecord | null> {
+  try {
+    const omUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.latitude}&longitude=${loc.longitude}&current=pm2_5,us_aqi`;
+    const omRes = await fetchFn(omUrl, { signal: AbortSignal.timeout(8000) });
+    if (!omRes.ok) return null;
+
+    const omData = (await omRes.json()) as OpenMeteoAQIResponse;
+    const current = omData.current;
+    if (!current || typeof current.pm2_5 !== "number") return null;
+
+    const aqiVal = current.us_aqi ?? Math.round(current.pm2_5 * 1.5);
+    return {
+      aqi: Math.round(aqiVal),
+      pm25: Number(current.pm2_5.toFixed(1)),
+      source: "open-meteo",
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Main Air Quality fetcher with bounded caching, Google AQ primary, and Open-Meteo fallback.
  */
 export async function fetchAirQuality(
   locationInput: { city?: string; latitude?: number; longitude?: number },
@@ -175,71 +308,13 @@ export async function fetchAirQuality(
     };
   }
 
-  let resultData: { aqi: number; pm25: number; source: AQISource } | null = null;
+  let resultData: RawAQIRecord | null = null;
 
-  // 1. Try Google Air Quality API if key is present
   if (options.googleApiKey) {
-    try {
-      const googleUrl = `https://airquality.googleapis.com/v1/currentConditions:lookup?key=${encodeURIComponent(
-        options.googleApiKey
-      )}`;
-      const googleRes = await fetchFn(googleUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location: {
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-          },
-          extraComputations: ["LOCAL_AQI", "POLLUTANT_CONCENTRATION"],
-        }),
-        signal: AbortSignal.timeout(8000),
-      });
-
-      if (googleRes.ok) {
-        const gData = (await googleRes.json()) as any;
-        const uaqi = gData.indexes?.find(
-          (idx: any) => idx.code === "uaqi" || idx.code === "usa_epa"
-        );
-        const pm25Pollutant = gData.pollutants?.find(
-          (p: any) => p.code === "pm25"
-        );
-
-        if (uaqi && typeof uaqi.aqi === "number") {
-          const pm25Val = pm25Pollutant?.concentration?.value ?? (uaqi.aqi * 0.6);
-          resultData = {
-            aqi: Math.round(uaqi.aqi),
-            pm25: Number(pm25Val.toFixed(1)),
-            source: "google",
-          };
-        }
-      }
-    } catch {
-      // Proceed to fallback
-    }
+    resultData = await fetchFromGoogleAQ(loc, options.googleApiKey, fetchFn);
   }
-
-  // 2. Open-Meteo Air Quality Fallback (Keyless)
   if (!resultData) {
-    try {
-      const omUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.latitude}&longitude=${loc.longitude}&current=pm2_5,us_aqi`;
-      const omRes = await fetchFn(omUrl, { signal: AbortSignal.timeout(8000) });
-
-      if (omRes.ok) {
-        const omData = (await omRes.json()) as any;
-        const current = omData?.current;
-        if (current && typeof current.pm2_5 === "number") {
-          const aqiVal = current.us_aqi ?? Math.round(current.pm2_5 * 1.5);
-          resultData = {
-            aqi: Math.round(aqiVal),
-            pm25: Number(current.pm2_5.toFixed(1)),
-            source: "open-meteo",
-          };
-        }
-      }
-    } catch {
-      // Failed both
-    }
+    resultData = await fetchFromOpenMeteo(loc, fetchFn);
   }
 
   if (!resultData) {
@@ -261,7 +336,10 @@ export async function fetchAirQuality(
     fetchedAt: new Date(now).toISOString(),
   };
 
-  // Cache for 10 minutes
+  if (aqiCache.size >= MAX_CACHE_ENTRIES) {
+    pruneAQICache(now);
+  }
+
   aqiCache.set(cacheKey, {
     data: fullData,
     expiresAt: now + CACHE_TTL_MS,

@@ -8,10 +8,13 @@ interface ImpactCardProps {
 
 export const ImpactCard: React.FC<ImpactCardProps> = ({ impact }) => {
   const reductionPct = Math.min(100, Math.max(0, impact.reductionPercentage));
-  const remainingPct = (100 - reductionPct).toFixed(1);
+  const remainingPct = Math.max(0, Math.min(100, 100 - reductionPct));
 
   return (
-    <div className="bento-card rounded-2xl p-6 space-y-6">
+    <section
+      aria-label="Deterministic PM2.5 exposure impact metrics"
+      className="bento-card rounded-2xl p-6 space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200/80 pb-4">
         <div>
@@ -23,57 +26,63 @@ export const ImpactCard: React.FC<ImpactCardProps> = ({ impact }) => {
               ISO Verified Arithmetic
             </span>
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="text-xs text-zinc-600 mt-1">
             Physical multi-compartment mass-balance decay models, not hallucinated LLM guesses
           </p>
         </div>
 
         <div className="flex items-center gap-1.5 text-xs text-zinc-800 font-semibold font-mono">
-          <ShieldCheck className="w-4 h-4 text-zinc-950" />
+          <ShieldCheck className="w-4 h-4 text-zinc-950" aria-hidden="true" />
           <span>Physics-Bound</span>
         </div>
       </div>
 
       {/* Primary Metrics Bento Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Exposure Reduction */}
-        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
-            <span className="font-semibold uppercase tracking-wider text-[11px]">Exposure Reduction</span>
-            <TrendingDown className="w-4 h-4 text-emerald-600" />
+        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden">
+          <div className="flex items-center justify-between text-xs text-zinc-600">
+            <span className="font-semibold uppercase tracking-wider text-[11px]">
+              Exposure Reduction
+            </span>
+            <TrendingDown className="w-4 h-4 text-emerald-700" aria-hidden="true" />
           </div>
           <div className="text-3xl font-extrabold text-zinc-950 mt-2 font-mono tracking-tight">
             -{impact.reductionPercentage}%
           </div>
-          <div className="text-[11px] text-zinc-500 mt-1 font-mono">
-            {impact.baselineExposurePM25} → <span className="text-zinc-950 font-bold">{impact.mitigatedExposurePM25}</span> µg/m³
+          <div className="text-[11px] text-zinc-600 mt-1 font-mono">
+            {impact.baselineExposurePM25} →{" "}
+            <span className="text-zinc-950 font-bold">{impact.mitigatedExposurePM25}</span> µg/m³
           </div>
         </div>
 
-        {/* Cigarettes Avoided */}
-        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
-            <span className="font-semibold uppercase tracking-wider text-[11px]">Cigarettes Avoided</span>
-            <Cigarette className="w-4 h-4 text-amber-600" />
+        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden">
+          <div className="flex items-center justify-between text-xs text-zinc-600">
+            <span className="font-semibold uppercase tracking-wider text-[11px]">
+              Cigarettes Avoided
+            </span>
+            <Cigarette className="w-4 h-4 text-amber-700" aria-hidden="true" />
           </div>
           <div className="text-3xl font-extrabold text-zinc-950 mt-2 font-mono tracking-tight">
-            {impact.cigarettesSavedPerDay} <span className="text-xs text-zinc-500 font-normal">/ day</span>
+            {impact.cigarettesSavedPerDay}{" "}
+            <span className="text-xs text-zinc-600 font-normal">/ day</span>
           </div>
-          <div className="text-[11px] text-zinc-500 mt-1 font-mono">
+          <div className="text-[11px] text-zinc-600 mt-1 font-mono">
             ≈ {impact.annualCigarettesAvoided} avoided / year
           </div>
         </div>
 
-        {/* CO2 Mitigated */}
-        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden group">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
-            <span className="font-semibold uppercase tracking-wider text-[11px]">CO2 Mitigated</span>
-            <Leaf className="w-4 h-4 text-teal-600" />
+        <div className="p-4 rounded-xl bg-zinc-50/80 border border-zinc-200/80 relative overflow-hidden">
+          <div className="flex items-center justify-between text-xs text-zinc-600">
+            <span className="font-semibold uppercase tracking-wider text-[11px]">
+              CO2 Mitigated
+            </span>
+            <Leaf className="w-4 h-4 text-teal-700" aria-hidden="true" />
           </div>
           <div className="text-3xl font-extrabold text-zinc-950 mt-2 font-mono tracking-tight">
-            {impact.co2SavedKgPerMonth} <span className="text-xs text-zinc-500 font-normal">kg/mo</span>
+            {impact.co2SavedKgPerMonth}{" "}
+            <span className="text-xs text-zinc-600 font-normal">kg/mo</span>
           </div>
-          <div className="text-[11px] text-zinc-500 mt-1">
+          <div className="text-[11px] text-zinc-600 mt-1">
             Transit & clean cooking swaps
           </div>
         </div>
@@ -82,17 +91,23 @@ export const ImpactCard: React.FC<ImpactCardProps> = ({ impact }) => {
       {/* Visual Relative Exposure Progress Bar */}
       <div className="p-4 rounded-xl bg-zinc-50/60 border border-zinc-200/80 space-y-2">
         <div className="flex items-center justify-between text-xs font-mono">
-          <span className="text-zinc-600">Mitigated Lung Burden:</span>
-          <span className="text-zinc-950 font-bold">{remainingPct}% of Ambient Smog</span>
+          <span className="text-zinc-700 font-medium">Mitigated Lung Burden:</span>
+          <span className="text-zinc-950 font-bold">{remainingPct.toFixed(1)}% of Ambient Smog</span>
         </div>
-        <div className="w-full h-3 bg-zinc-200/80 rounded-full overflow-hidden flex">
+        <div
+          role="progressbar"
+          aria-valuenow={Math.round(remainingPct)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Remaining mitigated particulate burden: ${remainingPct.toFixed(1)} percent`}
+          className="w-full h-3 bg-zinc-200/80 rounded-full overflow-hidden flex"
+        >
           <div
             className="h-full bg-zinc-950 rounded-full transition-all duration-500"
-            style={{ width: `${Math.max(5, 100 - reductionPct)}%` }}
-            title={`Mitigated Exposure: ${remainingPct}%`}
+            style={{ width: `${Math.max(5, remainingPct)}%` }}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
+        <div className="flex justify-between text-[10px] text-zinc-600 font-mono">
           <span>0 (Pure Air)</span>
           <span className="text-zinc-950 font-bold">-{reductionPct}% Harm Blocked</span>
           <span>100% (Ambient Unprotected)</span>
@@ -100,12 +115,12 @@ export const ImpactCard: React.FC<ImpactCardProps> = ({ impact }) => {
       </div>
 
       {/* Transparent Disclaimer */}
-      <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-600 flex items-start gap-2.5 leading-relaxed">
-        <Info className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+      <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 flex items-start gap-2.5 leading-relaxed">
+        <Info className="w-4 h-4 text-zinc-600 shrink-0 mt-0.5" aria-hidden="true" />
         <p className="text-[11px]">
           <strong className="text-zinc-950 font-semibold">Methodology Disclaimer:</strong> {impact.caveat}
         </p>
       </div>
-    </div>
+    </section>
   );
 };

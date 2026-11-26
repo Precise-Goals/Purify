@@ -7,11 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check-size": "bun run scripts/check-size.ts",
-    "verify": "bun run typecheck && bun test && bun run check-size"
+    "verify": "bun run typecheck && bun run lint && bun test && bun run check-size"
   },
   "dependencies": {
     "lucide-react": "^1.78.0",
@@ -20,12 +20,15 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/bun": "^1.4.5",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.7.0",
+    "eslint": "^9",
+    "eslint-config-next": "^15.1.0",
     "postcss": "^8.5.33",
     "tailwindcss": "^4.3.5",
     "typescript": "^5.7.0"

@@ -49,13 +49,37 @@ describe("aqi: geocodeLocation (AC-001-c)", () => {
     expect(lahore.latitude).toBeCloseTo(31.5204, 1);
     expect(lahore.longitude).toBeCloseTo(74.3587, 1);
   });
+
+  it("queries Open-Meteo geocoding for unlisted cities and falls back cleanly on errors", async () => {
+    const geocoded = await geocodeLocation(
+      { city: "Chandigarh" },
+      async () =>
+        new Response(
+          JSON.stringify({
+            results: [{ latitude: 30.7333, longitude: 76.7794, name: "Chandigarh", country: "India" }],
+          }),
+          { status: 200 }
+        )
+    );
+    expect(geocoded.displayName).toBe("Chandigarh, India");
+    expect(geocoded.latitude).toBeCloseTo(30.7333, 2);
+
+    const approx = await geocodeLocation({ city: "NowhereVille" }, async () => {
+      throw new Error("network down");
+    });
+    expect(approx.displayName).toBe("NowhereVille (approximate)");
+    expect(approx.latitude).toBeCloseTo(28.6139, 2);
+  });
 });
 
 describe("aqi: fetchAirQuality with mock injected fetch", () => {
-  it("fetches from Google AQ API when key provided and succeeds (AC-001-a)", async () => {
+  it("fetches from Google AQ API using X-Goog-Api-Key header when key provided (AC-001-a)", async () => {
     clearAQICache();
-    const mockFetch: FetchLike = async (url) => {
+    const mockFetch: FetchLike = async (url, init) => {
       if (typeof url === "string" && url.includes("airquality.googleapis.com")) {
+        const headers = init?.headers as Record<string, string> | undefined;
+        expect(headers?.["X-Goog-Api-Key"]).toBe("test-google-key");
+        expect(url).not.toContain("test-google-key");
         return new Response(
           JSON.stringify({
             indexes: [

@@ -6,7 +6,6 @@ import {
   Wind,
   User,
   ShieldCheck,
-  Cpu,
   Cloud,
   Code2,
   ArrowRight,
@@ -286,25 +285,42 @@ export default function AboutPage() {
             </div>
 
             {/* Code Tabs */}
-            <div className="flex flex-wrap items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200">
-              {(Object.keys(GCP_CODE_SNIPPETS) as Array<keyof typeof GCP_CODE_SNIPPETS>).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveCodeTab(tab)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
-                    activeCodeTab === tab
-                      ? "bg-zinc-950 text-white shadow-xs"
-                      : "text-zinc-600 hover:text-zinc-950 hover:bg-white"
-                  }`}
-                >
-                  {tab}.ts
-                </button>
-              ))}
+            <div
+              role="tablist"
+              aria-label="GCP module implementation files"
+              className="flex flex-wrap items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200"
+            >
+              {(Object.keys(GCP_CODE_SNIPPETS) as Array<keyof typeof GCP_CODE_SNIPPETS>).map((tab) => {
+                const isSelected = activeCodeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    role="tab"
+                    id={`gcp-tab-${tab}`}
+                    aria-selected={isSelected}
+                    aria-controls={`gcp-panel-${tab}`}
+                    onClick={() => setActiveCodeTab(tab)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 ${
+                      isSelected
+                        ? "bg-zinc-950 text-white shadow-xs"
+                        : "text-zinc-700 hover:text-zinc-950 hover:bg-white"
+                    }`}
+                  >
+                    {tab}.ts
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Code Viewer */}
-          <div className="relative rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden text-zinc-100">
+          <div
+            role="tabpanel"
+            id={`gcp-panel-${activeCodeTab}`}
+            aria-labelledby={`gcp-tab-${activeCodeTab}`}
+            className="relative rounded-xl bg-zinc-950 border border-zinc-800 overflow-hidden text-zinc-100"
+          >
             <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900 border-b border-zinc-800 text-[11px] font-mono text-zinc-400">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />

@@ -1,6 +1,5 @@
 import { execSync } from "child_process";
 import fs from "fs";
-import path from "path";
 
 const MAX_TOTAL_BYTES = 10 * 1024 * 1024; // 10 MB
 

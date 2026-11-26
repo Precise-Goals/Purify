@@ -1,6 +1,7 @@
 /**
  * Input Sanitisation and Validation
- * Defends against prompt injection, malformed keys, oversized payloads, and bad JSON.
+ * Defends against prompt injection, malformed keys, oversized payloads,
+ * secret reflection, and bad JSON.
  */
 
 export interface ValidateKeyResult {
@@ -13,14 +14,19 @@ export interface PayloadSizeResult {
   bytes: number;
 }
 
+export type HomeType = "sealed" | "standard" | "leaky";
+export type CookingFuel = "lpg_electric" | "biomass_wood" | "kerosene";
+export type CommuteMode = "walk_cycle" | "two_wheeler" | "carpool_transit" | "personal_car";
+export type BudgetTier = "low" | "medium" | "high";
+
 export interface SanitizedProfile {
   city: string;
   latitude?: number;
   longitude?: number;
-  homeType: "sealed" | "standard" | "leaky";
-  cookingFuel: "lpg_electric" | "biomass_wood" | "kerosene";
-  commuteMode: "walk_cycle" | "two_wheeler" | "carpool_transit" | "personal_car";
-  budget: "low" | "medium" | "high";
+  homeType: HomeType;
+  cookingFuel: CookingFuel;
+  commuteMode: CommuteMode;
+  budget: BudgetTier;
   outdoorHours: number;
   hasExistingPurifier: boolean;
   notes: string;
@@ -34,6 +40,60 @@ export interface SanitizeProfileResult {
 const MAX_PAYLOAD_BYTES = 8192; // 8 KB body cap
 const MAX_FREE_TEXT_LENGTH = 300;
 
+const VALID_HOME_TYPES: readonly HomeType[] = ["sealed", "standard", "leaky"];
+const VALID_COOKING_FUELS: readonly CookingFuel[] = ["lpg_electric", "biomass_wood", "kerosene"];
+const VALID_COMMUTE_MODES: readonly CommuteMode[] = [
+  "walk_cycle",
+  "two_wheeler",
+  "carpool_transit",
+  "personal_car",
+];
+const VALID_BUDGETS: readonly BudgetTier[] = ["low", "medium", "high"];
+
+/**
+ * Picks a validated string union value without unsafe casts.
+ */
+function pickEnumValue<T extends string>(
+  value: unknown,
+  allowed: readonly T[],
+  fallback: T
+): T {
+  if (typeof value === "string") {
+    for (const item of allowed) {
+      if (item === value) return item;
+    }
+  }
+  return fallback;
+}
+
+/**
+ * Strips non-printable ASCII control characters while preserving whitespace
+ * (\t, \n, \r) and international Unicode characters.
+ */
+function stripControlCharacters(input: string): string {
+  let result = "";
+  for (let i = 0; i < input.length; i++) {
+    const code = input.charCodeAt(i);
+    const isAllowedControl = code === 9 || code === 10 || code === 13;
+    const isAsciiControl = (code <= 31 && !isAllowedControl) || code === 127;
+    if (!isAsciiControl) {
+      result += input[i];
+    }
+  }
+  return result;
+}
+
+/**
+ * Redacts API keys and bearer tokens from text before returning or logging errors.
+ */
+export function redactSecrets(input: string): string {
+  return input
+    .replace(/AIza[A-Za-z0-9_.-]{10,}/g, "[REDACTED_KEY]")
+    .replace(/AQ\.[A-Za-z0-9_.-]{10,}/g, "[REDACTED_KEY]")
+    .replace(/Bearer\s+[A-Za-z0-9_.-]+/gi, "Bearer [REDACTED_TOKEN]")
+    .replace(/([?&]key=)[^&\s]+/gi, "$1[REDACTED_KEY]");
+}
+
 /**
  * Validates the Gemini API key format (x-gemini-key).
  * Returns NO_KEY if missing, BAD_KEY if invalid format.
@@ -44,7 +104,7 @@ export function validateGeminiKey(key: unknown): ValidateKeyResult {
   }
 
   const trimmed = key.trim();
-  // Valid Google API keys are alphanumeric with hyphens/underscores/dots (e.g. AIzaSy..., AQ....), at least 20 chars
+  // Valid Google API keys contain alphanumerics, hyphens, underscores, or dots (e.g. AIzaSy..., AQ....)
   if (trimmed.length < 20 || !/^[A-Za-z0-9_.-]+$/.test(trimmed)) {
     return { valid: false, code: "BAD_KEY" };
   }
@@ -65,8 +125,7 @@ export function checkPayloadSize(rawBodyString: string): PayloadSizeResult {
 
 /**
  * Strips HTML, script tags, and non-printable control characters.
- * Preserves unicode (Hindi, Marathi, Chinese, etc.).
- * Caps length to 300 chars.
+ * Preserves unicode (Hindi, Marathi, Chinese, etc.) and caps length to maxLength.
  */
 export function sanitizeFreeText(
   input: unknown,
@@ -74,84 +133,57 @@ export function sanitizeFreeText(
 ): string {
   if (typeof input !== "string") return "";
 
-  // 1. Strip non-printable ASCII control characters (keep regular whitespace/newlines)
-  // eslint-disable-next-line no-control-regex
-  let cleaned = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  const withoutControls = stripControlCharacters(input);
+  const withoutTags = withoutControls.replace(/<[^>]*>/g, "");
+  const normalizedWhitespace = withoutTags.replace(/\s+/g, " ").trim();
 
-  // 2. Strip HTML/XML/script markup
-  cleaned = cleaned.replace(/<[^>]*>/g, "");
+  return Array.from(normalizedWhitespace).slice(0, maxLength).join("");
+}
 
-  // 3. Normalize multiple whitespace
-  cleaned = cleaned.replace(/\s+/g, " ").trim();
-
-  // 4. Cap at maxLength unicode characters
-  return Array.from(cleaned).slice(0, maxLength).join("");
+/**
+ * Parses a finite geographic coordinate within inclusive [min, max] bounds.
+ */
+function parseCoordinate(value: unknown, min: number, max: number): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value) && value >= min && value <= max) {
+    return value;
+  }
+  return undefined;
 }
 
 /**
  * Sanitizes and validates incoming household profile.
  */
 export function sanitizeProfile(raw: unknown): SanitizeProfileResult {
-  if (!raw || typeof raw !== "object") {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
     return { error: "Invalid profile payload: must be a JSON object" };
   }
 
   const obj = raw as Record<string, unknown>;
 
-  const city = sanitizeFreeText(obj.city ?? "Delhi", 80);
+  const city = sanitizeFreeText(obj.city ?? "Delhi", 80) || "Delhi";
   const notes = sanitizeFreeText(obj.notes ?? "", 300);
 
   let outdoorHours = 2;
-  if (typeof obj.outdoorHours === "number") {
+  if (typeof obj.outdoorHours === "number" && Number.isFinite(obj.outdoorHours)) {
     outdoorHours = obj.outdoorHours;
   } else if (typeof obj.outdoorHours === "string") {
     const parsed = parseFloat(obj.outdoorHours);
-    if (!isNaN(parsed)) outdoorHours = parsed;
+    if (Number.isFinite(parsed)) outdoorHours = parsed;
   }
   outdoorHours = Math.max(0, Math.min(16, outdoorHours));
 
   const hasExistingPurifier =
     obj.hasExistingPurifier === true || obj.hasExistingPurifier === "true";
 
-  const validHomeTypes = ["sealed", "standard", "leaky"] as const;
-  const homeType = validHomeTypes.includes(obj.homeType as any)
-    ? (obj.homeType as "sealed" | "standard" | "leaky")
-    : "standard";
-
-  const validCooking = ["lpg_electric", "biomass_wood", "kerosene"] as const;
-  const cookingFuel = validCooking.includes(obj.cookingFuel as any)
-    ? (obj.cookingFuel as "lpg_electric" | "biomass_wood" | "kerosene")
-    : "lpg_electric";
-
-  const validCommute = ["walk_cycle", "two_wheeler", "carpool_transit", "personal_car"] as const;
-  const commuteMode = validCommute.includes(obj.commuteMode as any)
-    ? (obj.commuteMode as "walk_cycle" | "two_wheeler" | "carpool_transit" | "personal_car")
-    : "carpool_transit";
-
-  const validBudget = ["low", "medium", "high"] as const;
-  const budget = validBudget.includes(obj.budget as any)
-    ? (obj.budget as "low" | "medium" | "high")
-    : "medium";
-
-  let latitude: number | undefined;
-  if (typeof obj.latitude === "number" && !isNaN(obj.latitude) && obj.latitude >= -90 && obj.latitude <= 90) {
-    latitude = obj.latitude;
-  }
-
-  let longitude: number | undefined;
-  if (typeof obj.longitude === "number" && !isNaN(obj.longitude) && obj.longitude >= -180 && obj.longitude <= 180) {
-    longitude = obj.longitude;
-  }
-
   return {
     profile: {
       city,
-      latitude,
-      longitude,
-      homeType,
-      cookingFuel,
-      commuteMode,
-      budget,
+      latitude: parseCoordinate(obj.latitude, -90, 90),
+      longitude: parseCoordinate(obj.longitude, -180, 180),
+      homeType: pickEnumValue(obj.homeType, VALID_HOME_TYPES, "standard"),
+      cookingFuel: pickEnumValue(obj.cookingFuel, VALID_COOKING_FUELS, "lpg_electric"),
+      commuteMode: pickEnumValue(obj.commuteMode, VALID_COMMUTE_MODES, "carpool_transit"),
+      budget: pickEnumValue(obj.budget, VALID_BUDGETS, "medium"),
       outdoorHours,
       hasExistingPurifier,
       notes,

@@ -1,9 +1,11 @@
 /**
  * Google Cloud Platform (GCP) BigQuery Streaming Analytics Adapter
- * 
+ *
  * Defines schema and streaming pipeline for high-scale urban air quality research,
  * exposure reduction analytics, and cohort environmental health tracking.
  */
+
+import type { FetchLike } from "../aqi";
 
 export interface BigQuerySmogRecord {
   insertId: string;
@@ -19,19 +21,39 @@ export interface BigQuerySmogRecord {
   interventions_applied: string[];
 }
 
-export class BigQueryAnalyticsService {
-  private datasetId = "purify_analytics";
-  private tableId = "daily_smog_mitigations";
-  private projectId: string;
+export interface BigQueryFieldSchema {
+  name: string;
+  type: "TIMESTAMP" | "STRING" | "INT64" | "FLOAT64";
+  mode: "REQUIRED" | "NULLABLE" | "REPEATED";
+}
 
-  constructor() {
-    this.projectId = process.env.GOOGLE_CLOUD_PROJECT || "purify-gcp-production";
+export interface BigQueryOptions {
+  projectId?: string;
+  accessToken?: string;
+  fetchFn?: FetchLike;
+}
+
+/**
+ * BigQuery connector for anonymized cohort PM2.5 exposure research analytics.
+ */
+export class BigQueryAnalyticsService {
+  private readonly datasetId = "purify_analytics";
+  private readonly tableId = "daily_smog_mitigations";
+  private readonly projectId: string;
+  private readonly accessToken?: string;
+  private readonly fetchFn: FetchLike;
+
+  constructor(options: BigQueryOptions = {}) {
+    this.projectId =
+      options.projectId || process.env.GOOGLE_CLOUD_PROJECT || "purify-gcp-production";
+    this.accessToken = options.accessToken ?? process.env.GOOGLE_ACCESS_TOKEN;
+    this.fetchFn = options.fetchFn || fetch;
   }
 
   /**
-   * Returns standard BigQuery schema definition for reproducible terraform / GCP provisioning.
+   * Returns standard BigQuery schema definition for reproducible Terraform / GCP provisioning.
    */
-  public getSchemaDefinition() {
+  public getSchemaDefinition(): readonly BigQueryFieldSchema[] {
     return [
       { name: "timestamp", type: "TIMESTAMP", mode: "REQUIRED" },
       { name: "city_name", type: "STRING", mode: "REQUIRED" },
@@ -50,18 +72,18 @@ export class BigQueryAnalyticsService {
    * Streams a row to BigQuery table via streaming insert API.
    */
   public async streamRecord(record: BigQuerySmogRecord): Promise<{ inserted: boolean }> {
-    if (!process.env.GOOGLE_ACCESS_TOKEN) {
-      return { inserted: true }; // Mock/simulated success in local development
+    if (!this.accessToken) {
+      return { inserted: true };
     }
 
     const endpoint = `https://bigquery.googleapis.com/bigquery/v2/projects/${this.projectId}/datasets/${this.datasetId}/tables/${this.tableId}/insertAll`;
 
     try {
-      const res = await fetch(endpoint, {
+      const res = await this.fetchFn(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.GOOGLE_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${this.accessToken}`,
         },
         body: JSON.stringify({
           rows: [{ insertId: record.insertId, json: record }],

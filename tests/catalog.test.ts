@@ -86,6 +86,15 @@ describe("catalog: validateActionIds (AC-004-a)", () => {
     expect(res.errorCode).toBe("MODEL_EMPTY");
   });
 
+  it("exposes complete catalog via getAllActions and handles non-string/whitespace inputs", () => {
+    const all = getAllActions();
+    expect(all.length).toBe(ACTION_CATALOG.length);
+
+    const res = validateActionIds(["  n95_mask_commute  ", "", "   "]);
+    expect(res.validActions.map((a) => a.id)).toEqual(["n95_mask_commute"]);
+    expect(res.droppedIds).toEqual([]);
+  });
+
   it("returns MODEL_EMPTY if input list is empty", () => {
     const res = validateActionIds([]);
     expect(res.validActions).toEqual([]);

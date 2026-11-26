@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import {
-  Wind,
   ShieldCheck,
   Activity,
   ArrowRight,
@@ -62,14 +61,14 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-black text-zinc-950 tracking-tight flex items-center gap-2">
-              <Activity className="w-5 h-5 text-zinc-950" />
+              <Activity className="w-5 h-5 text-zinc-950" aria-hidden="true" />
               <span>Diurnal Urban Smog Simulation</span>
             </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
+            <p className="text-xs text-zinc-600 mt-0.5">
               Explore how diurnal inversion spikes threaten major cities and how Purify mitigates the curve.
             </p>
           </div>
-          <span className="text-[11px] font-mono text-zinc-600 hidden sm:inline-block">
+          <span className="text-[11px] font-mono text-zinc-700 hidden sm:inline-block">
             Atmospheric Boundary Layer Model
           </span>
         </div>
