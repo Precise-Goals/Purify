@@ -18,7 +18,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <div className="sticky top-4 z-50 w-full max-w-5xl mx-auto px-4 sm:px-6 pointer-events-none">
-      <header className="pointer-events-auto rounded-full bg-white/75 backdrop-blur-xl border border-white/80 shadow-[0_8px_32px_-4px_rgba(255,106,19,0.08),0_2px_8px_rgba(0,0,0,0.04)] px-4 sm:px-6 h-14 flex items-center justify-between transition-all">
+      <header className="pointer-events-auto rounded-full bg-white/70 backdrop-blur-2xl backdrop-saturate-150 border border-zinc-200/75 shadow-[0_8px_32px_-8px_rgba(24,24,27,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] px-4 sm:px-6 h-14 flex items-center justify-between transition-all">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-full bg-zinc-950 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
